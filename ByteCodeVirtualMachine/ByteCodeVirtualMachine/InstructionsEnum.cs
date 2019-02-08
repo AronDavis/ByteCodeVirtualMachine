@@ -1,4 +1,4 @@
-﻿namespace ByteCodeVirtualMachine
+﻿namespace BytecodeVirtualMachine
 {
     public enum InstructionsEnum : byte
     {
@@ -16,8 +16,11 @@
         GetArrayValueAtIndex,
         SetArrayValueAtIndex,
         DefType,
+        GetType,
         DefVar,
         GetVar,
         SetVar,
+        ReturnSignature,
+        Return
     }
 }

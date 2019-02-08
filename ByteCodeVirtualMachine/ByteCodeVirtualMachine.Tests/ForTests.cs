@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace ByteCodeVirtualMachine.Tests
+namespace BytecodeVirtualMachine.Tests
 {
     [TestClass]
     public class ForTests
@@ -12,6 +12,13 @@ namespace ByteCodeVirtualMachine.Tests
 
             byte[] data = new byte[]
             {
+                //set signature to return one byte
+                (byte)InstructionsEnum.Literal,
+                1,
+                (byte)InstructionsEnum.Literal,
+                0,
+                (byte)InstructionsEnum.ReturnSignature,
+
                 //set literal to 0 so we have a start value to add
                 (byte)InstructionsEnum.Literal,
                 0,
@@ -30,11 +37,14 @@ namespace ByteCodeVirtualMachine.Tests
 
                 //end for
                 (byte)InstructionsEnum.EndFor,
+
+                //return
+                (byte)InstructionsEnum.Return
             };
 
-            //confirm 0 + 2 + 2 + 2 + 2 + 2 (5 adds)
-            vm.Interpret(data);
-            Assert.AreEqual(10, vm.Peek());
+            //confirm that five adds happened: 0 + 2 + 2 + 2 + 2 + 2
+            var results = vm.Interpret(data);
+            Assert.AreEqual(10, results[0]);
         }
 
         [TestMethod]
@@ -44,6 +54,13 @@ namespace ByteCodeVirtualMachine.Tests
 
             byte[] data = new byte[]
             {
+                //set signature to return one byte
+                (byte)InstructionsEnum.Literal,
+                1,
+                (byte)InstructionsEnum.Literal,
+                0,
+                (byte)InstructionsEnum.ReturnSignature,
+
                 //set literal to 0 so we have a start value to add
                 (byte)InstructionsEnum.Literal,
                 0,
@@ -77,11 +94,14 @@ namespace ByteCodeVirtualMachine.Tests
 
                 //end external for
                 (byte)InstructionsEnum.EndFor,
+
+                //return
+                (byte)InstructionsEnum.Return
             };
 
             //confirm [(5) + (30)] + [(5) + (30)]
-            vm.Interpret(data);
-            Assert.AreEqual(70, vm.Peek());
+            var results = vm.Interpret(data);
+            Assert.AreEqual(70, results[0]);
         }
     }
 }

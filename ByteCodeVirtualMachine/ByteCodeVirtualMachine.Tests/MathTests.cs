@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace ByteCodeVirtualMachine.Tests
+namespace BytecodeVirtualMachine.Tests
 {
     [TestClass]
     public class MathTests
@@ -12,6 +12,13 @@ namespace ByteCodeVirtualMachine.Tests
 
             byte[] data = new byte[]
             {
+                //set signature to return one byte
+                (byte)InstructionsEnum.Literal,
+                1,
+                (byte)InstructionsEnum.Literal,
+                0,
+                (byte)InstructionsEnum.ReturnSignature,
+
                 //set literal to 3 so we can confirm value later
                 (byte)InstructionsEnum.Literal,
                 3,
@@ -21,13 +28,16 @@ namespace ByteCodeVirtualMachine.Tests
                 5,
                 
                 //add 3 + 5
-                (byte)InstructionsEnum.Add
+                (byte)InstructionsEnum.Add,
+
+                //return
+                (byte)InstructionsEnum.Return
             };
 
-            vm.Interpret(data);
+            var results = vm.Interpret(data);
 
             //confirm 3 + 5
-            Assert.AreEqual(8, vm.Peek());
+            Assert.AreEqual(8, results[0]);
         }
 
         [TestMethod]
@@ -37,6 +47,13 @@ namespace ByteCodeVirtualMachine.Tests
 
             byte[] data = new byte[]
             {
+                //set signature to return one byte
+                (byte)InstructionsEnum.Literal,
+                1,
+                (byte)InstructionsEnum.Literal,
+                0,
+                (byte)InstructionsEnum.ReturnSignature,
+
                 //set literal to 5 so we can confirm value later
                 (byte)InstructionsEnum.Literal,
                 5,
@@ -46,13 +63,16 @@ namespace ByteCodeVirtualMachine.Tests
                 3,
                 
                 //subtract 5-3
-                (byte)InstructionsEnum.Subtract
+                (byte)InstructionsEnum.Subtract,
+
+                //return
+                (byte)InstructionsEnum.Return
             };
 
-            vm.Interpret(data);
+            var results = vm.Interpret(data);
 
             //confirm 3 + 5
-            Assert.AreEqual(2, vm.Peek());
+            Assert.AreEqual(2, results[0]);
         }
 
         [TestMethod]
@@ -62,6 +82,13 @@ namespace ByteCodeVirtualMachine.Tests
 
             byte[] data = new byte[]
             {
+                //set signature to return one byte
+                (byte)InstructionsEnum.Literal,
+                1,
+                (byte)InstructionsEnum.Literal,
+                0,
+                (byte)InstructionsEnum.ReturnSignature,
+
                 //set literal to 5 so we can confirm value later
                 (byte)InstructionsEnum.Literal,
                 5,
@@ -71,13 +98,16 @@ namespace ByteCodeVirtualMachine.Tests
                 3,
                 
                 //multiply 5 * 3
-                (byte)InstructionsEnum.Multiply
+                (byte)InstructionsEnum.Multiply,
+
+                //return
+                (byte)InstructionsEnum.Return
             };
 
-            vm.Interpret(data);
+            var results = vm.Interpret(data);
 
             //confirm 5 * 3
-            Assert.AreEqual(15, vm.Peek());
+            Assert.AreEqual(15, results[0]);
         }
 
         [TestMethod]
@@ -87,6 +117,13 @@ namespace ByteCodeVirtualMachine.Tests
 
             byte[] data = new byte[]
             {
+                //set signature to return one byte
+                (byte)InstructionsEnum.Literal,
+                1,
+                (byte)InstructionsEnum.Literal,
+                0,
+                (byte)InstructionsEnum.ReturnSignature,
+
                 //set literal to 5 so we can confirm value later
                 (byte)InstructionsEnum.Literal,
                 6,
@@ -96,13 +133,16 @@ namespace ByteCodeVirtualMachine.Tests
                 2,
                 
                 //divide 6/2
-                (byte)InstructionsEnum.Divide
+                (byte)InstructionsEnum.Divide,
+
+                //return
+                (byte)InstructionsEnum.Return
             };
 
-            vm.Interpret(data);
+            var results = vm.Interpret(data);
 
             //confirm 6/2
-            Assert.AreEqual(3, vm.Peek());
+            Assert.AreEqual(3, results[0]);
         }
     }
 }

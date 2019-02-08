@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace ByteCodeVirtualMachine.Tests
+namespace BytecodeVirtualMachine.Tests
 {
     [TestClass]
     public class IfTests
@@ -12,6 +12,13 @@ namespace ByteCodeVirtualMachine.Tests
 
             byte[] data = new byte[]
             {
+                //set signature to return one byte
+                (byte)InstructionsEnum.Literal,
+                1,
+                (byte)InstructionsEnum.Literal,
+                0,
+                (byte)InstructionsEnum.ReturnSignature,
+
                 //set literal to 3 so we can confirm value later
                 (byte)InstructionsEnum.Literal,
                 3,
@@ -29,12 +36,15 @@ namespace ByteCodeVirtualMachine.Tests
                 (byte)InstructionsEnum.EndIf,
 
                 //add 3 + 7
-                (byte)InstructionsEnum.Add
+                (byte)InstructionsEnum.Add,
+
+                //return
+                (byte)InstructionsEnum.Return
             };
 
             //confirm 3 + 7
-            vm.Interpret(data);
-            Assert.AreEqual(10, vm.Peek());
+            var results = vm.Interpret(data);
+            Assert.AreEqual(10, results[0]);
         }
 
         [TestMethod]
@@ -44,6 +54,13 @@ namespace ByteCodeVirtualMachine.Tests
 
             byte[] data = new byte[]
             {
+                //set signature to return one byte
+                (byte)InstructionsEnum.Literal,
+                1,
+                (byte)InstructionsEnum.Literal,
+                0,
+                (byte)InstructionsEnum.ReturnSignature,
+
                 //set literal to 3 so we can confirm later
                 (byte)InstructionsEnum.Literal,
                 3,
@@ -65,11 +82,14 @@ namespace ByteCodeVirtualMachine.Tests
 
                 //add 3 + 2
                 (byte)InstructionsEnum.Add,
+
+                //return
+                (byte)InstructionsEnum.Return
             };
 
             //confirm that 3, not 7, is on top of the stack
-            vm.Interpret(data);
-            Assert.AreEqual(5, vm.Peek());
+            var results = vm.Interpret(data);
+            Assert.AreEqual(5, results[0]);
         }
 
         [TestMethod]
@@ -79,6 +99,13 @@ namespace ByteCodeVirtualMachine.Tests
 
             byte[] data = new byte[]
             {
+                //set signature to return one byte
+                (byte)InstructionsEnum.Literal,
+                1,
+                (byte)InstructionsEnum.Literal,
+                0,
+                (byte)InstructionsEnum.ReturnSignature,
+
                 //set literal to 3 so we can confirm later
                 (byte)InstructionsEnum.Literal,
                 3,
@@ -102,10 +129,13 @@ namespace ByteCodeVirtualMachine.Tests
                 (byte)InstructionsEnum.EndIf,
 
                 (byte)InstructionsEnum.Add,
+
+                //return
+                (byte)InstructionsEnum.Return
             };
             //confirm that 7 is on top of the stack
-            vm.Interpret(data);
-            Assert.AreEqual(10, vm.Peek());
+            var results = vm.Interpret(data);
+            Assert.AreEqual(10, results[0]);
         }
 
         [TestMethod]
@@ -115,6 +145,13 @@ namespace ByteCodeVirtualMachine.Tests
 
             byte[] data = new byte[]
             {
+                //set signature to return one byte
+                (byte)InstructionsEnum.Literal,
+                1,
+                (byte)InstructionsEnum.Literal,
+                0,
+                (byte)InstructionsEnum.ReturnSignature,
+
                 //set literal to 3 so we can confirm later
                 (byte)InstructionsEnum.Literal,
                 3,
@@ -140,9 +177,12 @@ namespace ByteCodeVirtualMachine.Tests
 
                 //add 3 + 2
                 (byte)InstructionsEnum.Add,
+
+                //return
+                (byte)InstructionsEnum.Return
             };
-            vm.Interpret(data);
-            Assert.AreEqual(5, vm.Peek());
+            var results = vm.Interpret(data);
+            Assert.AreEqual(5, results[0]);
         }
 
         [TestMethod]
@@ -152,6 +192,13 @@ namespace ByteCodeVirtualMachine.Tests
 
             byte[] data = new byte[]
             {
+                //set signature to return one byte
+                (byte)InstructionsEnum.Literal,
+                1,
+                (byte)InstructionsEnum.Literal,
+                0,
+                (byte)InstructionsEnum.ReturnSignature,
+
                 //set literal to 1 so the if results in true
                 (byte)InstructionsEnum.Literal,
                 1,
@@ -182,10 +229,13 @@ namespace ByteCodeVirtualMachine.Tests
 
                 //end if
                 (byte)InstructionsEnum.EndIf,
+
+                //return
+                (byte)InstructionsEnum.Return
             };
             //confirm 3 + 5
-            vm.Interpret(data);
-            Assert.AreEqual(8, vm.Peek());
+            var results = vm.Interpret(data);
+            Assert.AreEqual(8, results[0]);
         }
 
         [TestMethod]
@@ -195,6 +245,13 @@ namespace ByteCodeVirtualMachine.Tests
 
             byte[] data = new byte[]
             {
+                //set signature to return one byte
+                (byte)InstructionsEnum.Literal,
+                1,
+                (byte)InstructionsEnum.Literal,
+                0,
+                (byte)InstructionsEnum.ReturnSignature,
+
                 //set literal to 2 so we can confirm later
                 (byte)InstructionsEnum.Literal,
                 2,
@@ -232,11 +289,14 @@ namespace ByteCodeVirtualMachine.Tests
 
                 //add 2 + 3
                 (byte)InstructionsEnum.Add,
+
+                //return
+                (byte)InstructionsEnum.Return
             };
 
             //confirm 2 + 3
-            vm.Interpret(data);
-            Assert.AreEqual(5, vm.Peek());
+            var results = vm.Interpret(data);
+            Assert.AreEqual(5, results[0]);
         }
     }
 }

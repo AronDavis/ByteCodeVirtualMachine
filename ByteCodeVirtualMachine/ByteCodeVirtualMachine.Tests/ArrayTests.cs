@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace ByteCodeVirtualMachine.Tests
+namespace BytecodeVirtualMachine.Tests
 {
     [TestClass]
     public class ArrayTests
@@ -24,7 +24,14 @@ namespace ByteCodeVirtualMachine.Tests
                     //define type_0 with 2 fields
                     (byte)InstructionsEnum.DefType,
                 #endregion
-
+                    //set an array of type_0 to be the return signature
+                    (byte)InstructionsEnum.Literal,
+                    0,
+                    (byte)InstructionsEnum.GetType,
+                    (byte)InstructionsEnum.Literal, // array = yes
+                    1,
+                    (byte)InstructionsEnum.ReturnSignature,
+                    
                 #region defArray
                     //set literal to 0 for type id
                     (byte)InstructionsEnum.Literal,
@@ -62,12 +69,23 @@ namespace ByteCodeVirtualMachine.Tests
                     //array_0[0] = [3, 2]
                     (byte)InstructionsEnum.SetArrayValueAtIndex,
                 #endregion
+
+                    //return array_0
+                    (byte)InstructionsEnum.Literal,
+                    0,
+                    (byte)InstructionsEnum.Return
             };
 
-            vm.Interpret(data);
+            var results = vm.Interpret(data);
+
+            Assert.AreEqual(2, results.Length);
+
+            Assert.AreEqual(3, results[0]);
+            Assert.AreEqual(2, results[1]);
         }
 
         [TestMethod]
+        [Ignore("No idea what I was trying to do here.  Need to reevaluate.  Think this is the only place I have var tests.")]
         public void CreateAndSetWithLoop()
         {
             VirtualMachine vm = new VirtualMachine();
@@ -86,7 +104,6 @@ namespace ByteCodeVirtualMachine.Tests
                     //define type_0 with 2 fields
                     (byte)InstructionsEnum.DefType,
 
-                    //1 field type
                     
                     //set literal to 1 for type id
                     (byte)InstructionsEnum.Literal,
@@ -140,7 +157,7 @@ namespace ByteCodeVirtualMachine.Tests
                     //loop through each index in array
                     (byte)InstructionsEnum.For,
 
-                    //get var 0 for x
+                    //get var_0 for x
                     (byte)InstructionsEnum.Literal,
                     0,
                     (byte)InstructionsEnum.GetVar,
@@ -179,7 +196,6 @@ namespace ByteCodeVirtualMachine.Tests
                     //add 1 to index
                     (byte)InstructionsEnum.Add,
 
-                    
                     //set literal for var id to set
                     (byte)InstructionsEnum.Literal,
                     0,
