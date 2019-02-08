@@ -16,8 +16,7 @@ namespace BytecodeVirtualMachine
         private byte _numberOfBytesToReturn = 0; //TODO: make this "return type" without necessarily needing a type?  (or make native types)
         private bool _shouldReturnArray = false;
 
-        private byte[][][] arrays = new byte[byte.MaxValue + 1][][];
-        private byte[] arrayTypes = new byte[byte.MaxValue + 1];
+        private BytecodeArray[] arrays = new BytecodeArray[byte.MaxValue + 1];
         private byte[] types = new byte[byte.MaxValue + 1]; //TODO: could just replace this with the corresponding byte being the number of field...so 1 would have 1 field, 2 would have 2 fields, etc.
 
         private byte[][] vars = new byte[byte.MaxValue + 1][]; //could be a dictionary...
@@ -172,7 +171,7 @@ namespace BytecodeVirtualMachine
         {
             byte right = _pop();
             byte left = _pop();
-
+            
             _push((byte)(left / right)); //assume we won't overflow
         }
 
@@ -226,49 +225,32 @@ namespace BytecodeVirtualMachine
             byte id = _pop();
             byte typeId = _pop();
 
-            //set the type of the array so user doesn't have to pass it in again on set
-            arrayTypes[id] = typeId;
-
             byte numFields = types[typeId];
 
-            //push to arrays table
-            arrays[id] = new byte[length][];
-
-            for (int item = 0; item < length; item++)
+            BytecodeArray array = new BytecodeArray()
             {
-                arrays[id][item] = new byte[numFields];
+                Type = typeId,
+                Items = new BytecodeClass[length]
+            };
+
+            for (int i = 0; i < length; i++)
+            {
+                array.Items[i] = new BytecodeClass()
+                {
+                    Fields = new byte[numFields]
+                };
             }
+
+            arrays[id] = array;
 
             Console.WriteLine($"type_{typeId}[] array_{id} = new type_{typeId}[{length}]");
-        }
-
-        [Obsolete("This was originally used for returning, but it's not necessary if I can just use the array id.")]
-        private void _getArray()
-        {
-            byte arrayId = _pop();
-            byte typeId = arrayTypes[arrayId];
-
-            byte numFields = types[typeId];
-
-            byte[][] array = arrays[arrayId];
-
-            //this will be backwards.....
-            //  will also have issues with returning due to unknown length
-            for (int i = 0; i < array.Length; i++)
-            {
-                var item = array[i];
-                for (int j = 0; j < numFields; j++)
-                    _push(item[j]);
-            }
-
-            Console.WriteLine($"Retrieved array_{arrayId}.");
         }
 
         private void _getArrayLength()
         {
             byte id = _pop();
 
-            byte length = (byte)arrays[id].Length;
+            byte length = (byte)arrays[id].Items.Length;
 
             Console.WriteLine("array_" + id + " has length of " + length);
             _push(length);
@@ -276,45 +258,43 @@ namespace BytecodeVirtualMachine
 
         private void _getArrayValueAtIndex()
         {
-            byte index = _pop();
-            byte id = _pop();
+            byte itemIndex = _pop();
+            byte arrayId = _pop();
 
-            byte typeId = arrayTypes[id];
+            BytecodeArray array = arrays[arrayId];
+            BytecodeClass item = array.Items[itemIndex];
 
-            byte numFields = types[typeId];
-
-            Console.Write("array_" + id + "[" + index + "] has a value of [");
-            for (int field = 0; field < numFields; field++)
+            Console.Write($"array_{arrayId}[{itemIndex}] has a value of [");
+            for (int i = 0; i < item.Fields.Length; i++)
             {
-                byte value = arrays[id][index][field];
-                _push(value); //TODO: this is technically being pushed backwards?
+                byte value = item.Fields[i];
+                _push(value);
 
-                if (field == numFields - 1)
-                    Console.WriteLine(value + "]");
+                if (i == item.Fields.Length - 1)
+                    Console.WriteLine($"{value}]");
                 else
-                    Console.Write(value + ", ");
+                    Console.Write($"{value}, ");
             }
         }
 
         private void _setArrayValueAtIndex()
         {
-            byte id = _pop();
-            byte index = _pop();
+            byte arrayId = _pop();
+            byte itemIndex = _pop();
 
-            byte typeId = arrayTypes[id];
+            BytecodeArray array = arrays[arrayId];
+            BytecodeClass item = array.Items[itemIndex];
 
-            byte numFields = types[typeId];
-
-            Console.Write("array_" + id + "[" + index + "]" + " = [");
-            for (int field = 0; field < numFields; field++)
+            Console.Write($"array_{arrayId}[{itemIndex}] = [");
+            for (int field = 0; field < item.Fields.Length; field++)
             {
                 byte value = _pop();
-                arrays[id][index][field] = value;
+                item.Fields[field] = value;
 
-                if (field == numFields - 1)
-                    Console.WriteLine(value + "]");
+                if (field == item.Fields.Length - 1)
+                    Console.WriteLine($"{value}]");
                 else
-                    Console.Write(value + ", ");
+                    Console.Write($"{value}, ");
             }
         }
 
@@ -407,20 +387,18 @@ namespace BytecodeVirtualMachine
             if (_shouldReturnArray)
             {
                 byte arrayId = _pop();
-                byte arrayTypeId = arrayTypes[arrayId];
-                byte numFields = types[arrayTypeId];
 
+                BytecodeArray array = arrays[arrayId];
+                byte numFields = types[array.Type];
 
-                byte[][] array = arrays[arrayId];
+                returnBytes = new byte[array.Items.Length * numFields];
 
-                returnBytes = new byte[array.Length * numFields];
-
-                for (int i = 0; i < array.Length; i++)
+                for (int i = 0; i < array.Items.Length; i++)
                 {
-                    byte[] item = array[i];
+                    BytecodeClass item = array.Items[i];
 
                     for (int j = 0; j < numFields; j++)
-                        returnBytes[(i * numFields) + j] = item[j];
+                        returnBytes[(i * numFields) + j] = item.Fields[j];
                 }
                     
                 return returnBytes;
