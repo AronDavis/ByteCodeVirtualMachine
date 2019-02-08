@@ -13,25 +13,28 @@ namespace BytecodeVirtualMachine
         private Stack<int> indexesWhereForStarted = new Stack<int>();
         private Stack<byte> forCounts = new Stack<byte>();
 
-        private byte _numberOfBytesToReturn = 0; //TODO: make this "return type" without necessarily needing a type?  (or make native types)
+        private byte _returnType = 0;
         private bool _shouldReturnArray = false;
 
-        private BytecodeArray[] arrays = new BytecodeArray[byte.MaxValue + 1];
+        private BytecodeArray[] _arrays = new BytecodeArray[byte.MaxValue + 1];
 
-        private byte[] types = new byte[byte.MaxValue + 1]; //TODO: could just replace this with the corresponding byte being the number of field...so 1 would have 1 field, 2 would have 2 fields, etc.
+        private byte[] _types = new byte[byte.MaxValue + 1]; //TODO: could just replace this with the corresponding byte being the number of field...so 1 would have 1 field, 2 would have 2 fields, etc.
 
         private BytecodeClass[] vars = new BytecodeClass[byte.MaxValue + 1];
 
         public VirtualMachine()
         {
-            //type_0 is a native type (single byte)
-            types[0] = 1;
+            //type_0 is a placeholder for void/null
+            _types[0] = 0;
+
+            //type_1 is a native type (single byte)
+            _types[1] = 1;
         }
 
-        public byte[] Interpret(byte[] bytes)
+        public byte[] Interpret(IList<byte> bytes)
         {
             Console.WriteLine(this);
-            int size = bytes.Length;
+            int size = bytes.Count;
             for (int i = 0; i < size; i++)
             {
                 InstructionsEnum instruction = (InstructionsEnum)bytes[i];
@@ -105,6 +108,9 @@ namespace BytecodeVirtualMachine
                     case InstructionsEnum.DefArray:
                         _defArray();
                         break;
+                    case InstructionsEnum.GetArray:
+                        _getArray();
+                        break;
                     case InstructionsEnum.GetArrayLength:
                         _getArrayLength();
                         break;
@@ -116,9 +122,6 @@ namespace BytecodeVirtualMachine
                         break;
                     case InstructionsEnum.DefType:
                         _defType();
-                        break;
-                    case InstructionsEnum.GetType:
-                        _getType();
                         break;
                     case InstructionsEnum.DefVar:
                         _defVar();
@@ -136,11 +139,13 @@ namespace BytecodeVirtualMachine
                 Console.WriteLine(this);
             }
 
-            //TODO: this is technically an error in the bytecode if numberOfBytesToReturn > 0 (because we failed to return anything)
+            if (_returnType > 0)
+                throw new Exception("Missing return statement.");
+            
             return null;
         }
 
-        private void _literal(byte[] bytes, ref int i)
+        private void _literal(IList<byte> bytes, ref int i)
         {
             // Read the next byte from the bytecode.
             byte value = bytes[++i];
@@ -153,13 +158,15 @@ namespace BytecodeVirtualMachine
 
         private void _returnSignature()
         {
-            _shouldReturnArray = _pop() == 1;
-            _numberOfBytesToReturn = _pop();
+            _returnType = _pop();
 
+            if(_returnType > 0)
+                _shouldReturnArray = _pop() == 1;
+            
             if (_shouldReturnArray)
-                Console.Write($"Setting signature to return an array where each item is {_numberOfBytesToReturn} bytes");
+                Console.Write($"Setting signature to return type_{_returnType}[]");
             else
-                Console.Write($"Setting signature to return {_numberOfBytesToReturn} bytes");
+                Console.Write($"Setting signature to return type_{_returnType}");
         }
 
         private void _add()
@@ -285,7 +292,10 @@ namespace BytecodeVirtualMachine
             byte id = _pop();
             byte typeId = _pop();
 
-            byte numFields = types[typeId];
+            if (typeId == 0)
+                throw new Exception("Cannot have null (type_0) array type.");
+
+            byte numFields = _types[typeId];
 
             BytecodeArray array = new BytecodeArray()
             {
@@ -301,16 +311,36 @@ namespace BytecodeVirtualMachine
                 };
             }
 
-            arrays[id] = array;
+            _arrays[id] = array;
 
             Console.WriteLine($"type_{typeId}[] array_{id} = new type_{typeId}[{length}]");
+        }
+
+        private void _getArray()
+        {
+            byte arrayId = _pop();
+
+            BytecodeArray array = _arrays[arrayId];
+            byte numFields = _types[array.Type];
+
+            for (int i = 0; i < array.Items.Length; i++)
+            {
+                BytecodeClass item = array.Items[i];
+                for (int j = 0; j < numFields; j++)
+                    _push(item.Fields[j]);
+            }
+
+            //push length so we can read it back
+            _push((byte)array.Items.Length);
+
+            Console.WriteLine($"Retrieved array_{arrayId}.");
         }
 
         private void _getArrayLength()
         {
             byte id = _pop();
 
-            byte length = (byte)arrays[id].Items.Length;
+            byte length = (byte)_arrays[id].Items.Length;
 
             Console.WriteLine("array_" + id + " has length of " + length);
             _push(length);
@@ -321,7 +351,7 @@ namespace BytecodeVirtualMachine
             byte itemIndex = _pop();
             byte arrayId = _pop();
 
-            BytecodeArray array = arrays[arrayId];
+            BytecodeArray array = _arrays[arrayId];
             BytecodeClass item = array.Items[itemIndex];
 
             Console.Write($"array_{arrayId}[{itemIndex}] has a value of [");
@@ -339,10 +369,10 @@ namespace BytecodeVirtualMachine
 
         private void _setArrayValueAtIndex()
         {
-            byte arrayId = _pop();
             byte itemIndex = _pop();
+            byte arrayId = _pop();
 
-            BytecodeArray array = arrays[arrayId];
+            BytecodeArray array = _arrays[arrayId];
             BytecodeClass item = array.Items[itemIndex];
 
             Console.Write($"array_{arrayId}[{itemIndex}] = [");
@@ -363,23 +393,13 @@ namespace BytecodeVirtualMachine
             byte numBytes = _pop();
             byte id = _pop();
 
-            if (id == 0)
-                throw new Exception("type_0 is a native type and cannot be overwritten.");
+            if (id <= 1)
+                throw new Exception("type_0 and type_1 are native types and cannot be overwritten.");
 
             //push to arrays table
-            types[id] = numBytes;
+            _types[id] = numBytes;
 
             Console.WriteLine($"type_{id} = new type[{numBytes}]");
-        }
-
-        private void _getType()
-        {
-            byte typeId = _pop();
-
-            byte numBytes = types[typeId];
-
-            Console.WriteLine($"Retrieved type_{typeId} ({numBytes} bytes).");
-            _push(numBytes);
         }
 
         private void _defVar()
@@ -387,7 +407,10 @@ namespace BytecodeVirtualMachine
             byte id = _pop();
             byte typeId = _pop();
 
-            byte numFields = types[typeId];
+            if (typeId == 0)
+                throw new Exception("Cannot have a null (type_0) variable type.");
+
+            byte numFields = _types[typeId];
 
             vars[id] = new BytecodeClass()
             {
@@ -403,7 +426,7 @@ namespace BytecodeVirtualMachine
             byte id = _pop();
 
             BytecodeClass variable = vars[id];
-            byte numFields = types[variable.Type];
+            byte numFields = _types[variable.Type];
 
             Console.Write($"var_{id} has a value of [");
             for (int i = 0; i < numFields; i++)
@@ -423,7 +446,7 @@ namespace BytecodeVirtualMachine
             byte id = _pop();
 
             BytecodeClass variable = vars[id];
-            byte numFields = types[variable.Type];
+            byte numFields = _types[variable.Type];
 
             Console.Write($"var_{id} = [");
             for (int i = 0; i < numFields; i++)
@@ -440,36 +463,37 @@ namespace BytecodeVirtualMachine
 
         private byte[] _return()
         {
-            Console.Write($"Returning {_numberOfBytesToReturn} bytes.");
-
-            if (_numberOfBytesToReturn == 0)
+            if (_returnType == 0)
+            {
+                Console.Write($"Returning null");
                 return null;
+            }
 
             byte[] returnBytes;
 
             if (_shouldReturnArray)
             {
-                byte arrayId = _pop();
+                byte arrayLength = _pop();
+                byte numFields = _types[_returnType];
 
-                BytecodeArray array = arrays[arrayId];
-                byte numFields = types[array.Type];
+                Console.Write($"Returning a type_{_returnType}[]");
 
-                returnBytes = new byte[array.Items.Length * numFields];
+                returnBytes = new byte[arrayLength * numFields];
 
-                for (int i = 0; i < array.Items.Length; i++)
+                for (int i = 0; i < arrayLength; i++)
                 {
-                    BytecodeClass item = array.Items[i];
-
                     for (int j = 0; j < numFields; j++)
-                        returnBytes[(i * numFields) + j] = item.Fields[j];
+                        returnBytes[(i * numFields) + (numFields-1-j)] = _pop(); //(numFields-1-j) is to ensure that we reverse the order they would otherwise appear in in the stack
                 }
                     
                 return returnBytes;
             }
 
-            returnBytes = new byte[_numberOfBytesToReturn];
+            Console.Write($"Returning a type_{_returnType}");
 
-            for (byte i = 0; i < _numberOfBytesToReturn; i++)
+            returnBytes = new byte[_returnType];
+
+            for (byte i = 0; i < _returnType; i++)
                 returnBytes[i] = _pop();
 
             return returnBytes;

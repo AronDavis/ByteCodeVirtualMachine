@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 
 namespace BytecodeVirtualMachine.Tests.LogicalComparisonTests
 {
@@ -10,17 +11,12 @@ namespace BytecodeVirtualMachine.Tests.LogicalComparisonTests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            byte[] data = new byte[]
-            {
-                #region defReturnSignature
-                    //set signature to return one byte
-                    (byte)InstructionsEnum.Literal,
-                    1,
-                    (byte)InstructionsEnum.Literal,
-                    0,
-                    (byte)InstructionsEnum.ReturnSignature,
-                #endregion
+            List<byte> data = new List<byte>();
 
+            //set return type to type_1
+            data.AddRange(TestHelper.GetReturnSignatureInstructions(1));
+
+            data.AddRange<byte>(
                 //set literal to 1 so left is 1
                 (byte)InstructionsEnum.Literal,
                 1,
@@ -28,13 +24,13 @@ namespace BytecodeVirtualMachine.Tests.LogicalComparisonTests
                 //set literal to 2 so right is 2
                 (byte)InstructionsEnum.Literal,
                 2,
-                
+
                 //compare 1 == 2
                 (byte)InstructionsEnum.EqualTo,
 
                 //return
                 (byte)InstructionsEnum.Return
-            };
+            );
 
             var results = vm.Interpret(data);
 
@@ -47,17 +43,12 @@ namespace BytecodeVirtualMachine.Tests.LogicalComparisonTests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            byte[] data = new byte[]
-            {
-                #region defReturnSignature
-                    //set signature to return one byte
-                    (byte)InstructionsEnum.Literal,
-                    1,
-                    (byte)InstructionsEnum.Literal,
-                    0,
-                    (byte)InstructionsEnum.ReturnSignature,
-                #endregion
+            List<byte> data = new List<byte>();
 
+            //set return type to type_1
+            data.AddRange(TestHelper.GetReturnSignatureInstructions(1));
+
+            data.AddRange<byte>(
                 //set literal to 1 so left is 1
                 (byte)InstructionsEnum.Literal,
                 1,
@@ -65,13 +56,13 @@ namespace BytecodeVirtualMachine.Tests.LogicalComparisonTests
                 //set literal to 1 so right is 1
                 (byte)InstructionsEnum.Literal,
                 1,
-                
+
                 //compare 1 == 1
                 (byte)InstructionsEnum.EqualTo,
 
                 //return
                 (byte)InstructionsEnum.Return
-            };
+            );
 
             var results = vm.Interpret(data);
 
@@ -84,17 +75,12 @@ namespace BytecodeVirtualMachine.Tests.LogicalComparisonTests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            byte[] data = new byte[]
-            {
-                #region defReturnSignature
-                    //set signature to return one byte
-                    (byte)InstructionsEnum.Literal,
-                    1,
-                    (byte)InstructionsEnum.Literal,
-                    0,
-                    (byte)InstructionsEnum.ReturnSignature,
-                #endregion
+            List<byte> data = new List<byte>();
 
+            //set return type to type_1
+            data.AddRange(TestHelper.GetReturnSignatureInstructions(1));
+
+            data.AddRange<byte>(
                 //set literal to 2 so left is 2
                 (byte)InstructionsEnum.Literal,
                 2,
@@ -102,13 +88,13 @@ namespace BytecodeVirtualMachine.Tests.LogicalComparisonTests
                 //set literal to 1 so right is 1
                 (byte)InstructionsEnum.Literal,
                 1,
-                
+
                 //compare 2 == 1
                 (byte)InstructionsEnum.EqualTo,
 
                 //return
                 (byte)InstructionsEnum.Return
-            };
+            );
 
             var results = vm.Interpret(data);
 

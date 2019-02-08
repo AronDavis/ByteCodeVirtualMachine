@@ -13,19 +13,18 @@ namespace BytecodeVirtualMachine.Tests
             byte[] data = new byte[]
             {
                 #region defReturnSignature
-                //set an type_0 as the return type
-                (byte)InstructionsEnum.Literal,
-                0,
-                (byte)InstructionsEnum.GetType,
+                //set an type_1 as the return type
                 (byte)InstructionsEnum.Literal, // array = no
                 0,
+                (byte)InstructionsEnum.Literal,
+                1,
                 (byte)InstructionsEnum.ReturnSignature,
                 #endregion
 
                 #region defVariable
-                //set literal to 0 for type_0
-                (byte)InstructionsEnum.Literal,
-                    0,
+                    //set literal to 1 for type_1
+                    (byte)InstructionsEnum.Literal,
+                    1,
 
                     //set literal to 0 for var id
                     (byte)InstructionsEnum.Literal,

@@ -58,6 +58,7 @@
     <Compile Include="IfTests.cs" />
     <Compile Include="MathTests.cs" />
     <Compile Include="LogicalComparisonTests\LessThanTests.cs" />
+    <Compile Include="TestHelper.cs" />
     <Compile Include="VariableTests.cs" />
   </ItemGroup>
   <ItemGroup>

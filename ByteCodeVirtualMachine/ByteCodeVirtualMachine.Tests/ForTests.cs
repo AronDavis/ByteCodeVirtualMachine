@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 
 namespace BytecodeVirtualMachine.Tests
 {
@@ -10,15 +11,12 @@ namespace BytecodeVirtualMachine.Tests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            byte[] data = new byte[]
-            {
-                //set signature to return one byte
-                (byte)InstructionsEnum.Literal,
-                1,
-                (byte)InstructionsEnum.Literal,
-                0,
-                (byte)InstructionsEnum.ReturnSignature,
+            List<byte> data = new List<byte>();
 
+            //set return type to type_1
+            data.AddRange(TestHelper.GetReturnSignatureInstructions(1));
+
+            data.AddRange<byte>(
                 //set literal to 0 so we have a start value to add
                 (byte)InstructionsEnum.Literal,
                 0,
@@ -40,8 +38,8 @@ namespace BytecodeVirtualMachine.Tests
 
                 //return
                 (byte)InstructionsEnum.Return
-            };
-
+            );
+            
             //confirm that five adds happened: 0 + 2 + 2 + 2 + 2 + 2
             var results = vm.Interpret(data);
             Assert.AreEqual(10, results[0]);
@@ -52,15 +50,12 @@ namespace BytecodeVirtualMachine.Tests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            byte[] data = new byte[]
-            {
-                //set signature to return one byte
-                (byte)InstructionsEnum.Literal,
-                1,
-                (byte)InstructionsEnum.Literal,
-                0,
-                (byte)InstructionsEnum.ReturnSignature,
+            List<byte> data = new List<byte>();
 
+            //set return type to type_1
+            data.AddRange(TestHelper.GetReturnSignatureInstructions(1));
+
+            data.AddRange<byte>(
                 //set literal to 0 so we have a start value to add
                 (byte)InstructionsEnum.Literal,
                 0,
@@ -97,7 +92,7 @@ namespace BytecodeVirtualMachine.Tests
 
                 //return
                 (byte)InstructionsEnum.Return
-            };
+            );
 
             //confirm [(5) + (30)] + [(5) + (30)]
             var results = vm.Interpret(data);

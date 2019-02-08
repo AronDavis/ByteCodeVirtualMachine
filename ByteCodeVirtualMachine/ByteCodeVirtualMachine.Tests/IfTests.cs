@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 
 namespace BytecodeVirtualMachine.Tests
 {
@@ -10,15 +11,12 @@ namespace BytecodeVirtualMachine.Tests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            byte[] data = new byte[]
-            {
-                //set signature to return one byte
-                (byte)InstructionsEnum.Literal,
-                1,
-                (byte)InstructionsEnum.Literal,
-                0,
-                (byte)InstructionsEnum.ReturnSignature,
+            List<byte> data = new List<byte>();
 
+            //set return type to type_1
+            data.AddRange(TestHelper.GetReturnSignatureInstructions(1));
+
+            data.AddRange<byte>(
                 //set literal to 3 so we can confirm value later
                 (byte)InstructionsEnum.Literal,
                 3,
@@ -40,7 +38,7 @@ namespace BytecodeVirtualMachine.Tests
 
                 //return
                 (byte)InstructionsEnum.Return
-            };
+            );
 
             //confirm 3 + 7
             var results = vm.Interpret(data);
@@ -52,15 +50,12 @@ namespace BytecodeVirtualMachine.Tests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            byte[] data = new byte[]
-            {
-                //set signature to return one byte
-                (byte)InstructionsEnum.Literal,
-                1,
-                (byte)InstructionsEnum.Literal,
-                0,
-                (byte)InstructionsEnum.ReturnSignature,
+            List<byte> data = new List<byte>();
 
+            //set return type to type_1
+            data.AddRange(TestHelper.GetReturnSignatureInstructions(1));
+
+            data.AddRange<byte>(
                 //set literal to 3 so we can confirm later
                 (byte)InstructionsEnum.Literal,
                 3,
@@ -85,7 +80,7 @@ namespace BytecodeVirtualMachine.Tests
 
                 //return
                 (byte)InstructionsEnum.Return
-            };
+            );
 
             //confirm that 3, not 7, is on top of the stack
             var results = vm.Interpret(data);
@@ -97,15 +92,12 @@ namespace BytecodeVirtualMachine.Tests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            byte[] data = new byte[]
-            {
-                //set signature to return one byte
-                (byte)InstructionsEnum.Literal,
-                1,
-                (byte)InstructionsEnum.Literal,
-                0,
-                (byte)InstructionsEnum.ReturnSignature,
+            List<byte> data = new List<byte>();
 
+            //set return type to type_1
+            data.AddRange(TestHelper.GetReturnSignatureInstructions(1));
+
+            data.AddRange<byte>(
                 //set literal to 3 so we can confirm later
                 (byte)InstructionsEnum.Literal,
                 3,
@@ -132,7 +124,8 @@ namespace BytecodeVirtualMachine.Tests
 
                 //return
                 (byte)InstructionsEnum.Return
-            };
+            );
+
             //confirm that 7 is on top of the stack
             var results = vm.Interpret(data);
             Assert.AreEqual(10, results[0]);
@@ -143,15 +136,12 @@ namespace BytecodeVirtualMachine.Tests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            byte[] data = new byte[]
-            {
-                //set signature to return one byte
-                (byte)InstructionsEnum.Literal,
-                1,
-                (byte)InstructionsEnum.Literal,
-                0,
-                (byte)InstructionsEnum.ReturnSignature,
+            List<byte> data = new List<byte>();
 
+            //set return type to type_1
+            data.AddRange(TestHelper.GetReturnSignatureInstructions(1));
+
+            data.AddRange<byte>(
                 //set literal to 3 so we can confirm later
                 (byte)InstructionsEnum.Literal,
                 3,
@@ -180,7 +170,8 @@ namespace BytecodeVirtualMachine.Tests
 
                 //return
                 (byte)InstructionsEnum.Return
-            };
+            );
+            
             var results = vm.Interpret(data);
             Assert.AreEqual(5, results[0]);
         }
@@ -190,15 +181,12 @@ namespace BytecodeVirtualMachine.Tests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            byte[] data = new byte[]
-            {
-                //set signature to return one byte
-                (byte)InstructionsEnum.Literal,
-                1,
-                (byte)InstructionsEnum.Literal,
-                0,
-                (byte)InstructionsEnum.ReturnSignature,
+            List<byte> data = new List<byte>();
 
+            //set return type to type_1
+            data.AddRange(TestHelper.GetReturnSignatureInstructions(1));
+
+            data.AddRange<byte>(
                 //set literal to 1 so the if results in true
                 (byte)InstructionsEnum.Literal,
                 1,
@@ -225,14 +213,15 @@ namespace BytecodeVirtualMachine.Tests
                 5,
 
                 //add 3 and 5 to confirm
-                (byte)InstructionsEnum.Add, 
+                (byte)InstructionsEnum.Add,
 
                 //end if
                 (byte)InstructionsEnum.EndIf,
 
                 //return
                 (byte)InstructionsEnum.Return
-            };
+            );
+
             //confirm 3 + 5
             var results = vm.Interpret(data);
             Assert.AreEqual(8, results[0]);
@@ -243,15 +232,12 @@ namespace BytecodeVirtualMachine.Tests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            byte[] data = new byte[]
-            {
-                //set signature to return one byte
-                (byte)InstructionsEnum.Literal,
-                1,
-                (byte)InstructionsEnum.Literal,
-                0,
-                (byte)InstructionsEnum.ReturnSignature,
+            List<byte> data = new List<byte>();
 
+            //set return type to type_1
+            data.AddRange(TestHelper.GetReturnSignatureInstructions(1));
+
+            data.AddRange<byte>(
                 //set literal to 2 so we can confirm later
                 (byte)InstructionsEnum.Literal,
                 2,
@@ -292,7 +278,7 @@ namespace BytecodeVirtualMachine.Tests
 
                 //return
                 (byte)InstructionsEnum.Return
-            };
+            );
 
             //confirm 2 + 3
             var results = vm.Interpret(data);
