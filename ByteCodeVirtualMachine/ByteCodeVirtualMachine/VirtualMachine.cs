@@ -19,6 +19,7 @@ namespace ByteCodeVirtualMachine
         private byte[][] vars = new byte[byte.MaxValue + 1][]; //could be a dictionary...
         private byte[] varTypes = new byte[byte.MaxValue + 1]; //could be a dictionary...
 
+        //TODO: this should return an int or an array of ints (instead of using Peek)
         public void Interpret(byte[] bytes)
         {
             Console.WriteLine(this);
@@ -46,64 +47,58 @@ namespace ByteCodeVirtualMachine
                     }
                 }
 
-                switch ((InstructionsEnum)instruction)
+                switch (instruction)
                 {
                     case InstructionsEnum.Literal:
-                        literal(bytes, ref i);
+                        _literal(bytes, ref i);
                         break;
                     case InstructionsEnum.Add: //should be preceded by two values to add
-                        add();
+                        _add();
                         break;
                     case InstructionsEnum.Subtract: //should be preceded by two values to add
-                        subtract();
+                        _subtract();
                         break;
                     case InstructionsEnum.Multiply:
-                        multiply();
+                        _multiply();
                         break;
                     case InstructionsEnum.Divide:
-                        divide();
+                        _divide();
                         break;
                     case InstructionsEnum.If:
-                        @if();
+                        _if();
                         break;
                     case InstructionsEnum.EndIf:
-                        endIf();
+                        _endIf();
                         break;
                     case InstructionsEnum.For:
-                        @for(i);
+                        _for(i);
                         break;
                     case InstructionsEnum.EndFor:
-                        endFor(ref i);
+                        _endFor(ref i);
                         break;
                     case InstructionsEnum.DefArray:
-                        defArray();
+                        _defArray();
                         break;
                     case InstructionsEnum.GetArrayLength:
-                        getArrayLength();
+                        _getArrayLength();
                         break;
                     case InstructionsEnum.GetArrayValueAtIndex:
-                        getArrayValueAtIndex();
+                        _getArrayValueAtIndex();
                         break;
                     case InstructionsEnum.SetArrayValueAtIndex:
-                        setArrayValueAtIndex();
+                        _setArrayValueAtIndex();
                         break;
                     case InstructionsEnum.DefType:
-                        defType();
+                        _defType();
                         break;
                     case InstructionsEnum.DefVar:
-                        defVar();
+                        _defVar();
                         break;
                     case InstructionsEnum.GetVar:
-                        getVar();
+                        _getVar();
                         break;
                     case InstructionsEnum.SetVar:
-                        setVar();
-                        break;
-                    case InstructionsEnum.GetStat: //should be preceded by value to tell us which stat to get
-                        getStat();
-                        break;
-                    case InstructionsEnum.SetStat:
-                        setStat();
+                        _setVar();
                         break;
                 }
 
@@ -111,65 +106,65 @@ namespace ByteCodeVirtualMachine
             }
         }
 
-        private void literal(byte[] bytes, ref int i)
+        private void _literal(byte[] bytes, ref int i)
         {
             // Read the next byte from the bytecode.
             byte value = bytes[++i];
 
             //push to stack
-            push(value);
+            _push(value);
 
             Console.WriteLine("Setting literal to " + value);
         }
 
-        private void add()
+        private void _add()
         {
-            byte right = pop();
-            byte left = pop();
+            byte right = _pop();
+            byte left = _pop();
 
-            push((byte)(left + right)); //assume we won't overflow
+            _push((byte)(left + right)); //assume we won't overflow
 
             Console.WriteLine("Adding " + right + " + " + left);
         }
 
-        private void subtract()
+        private void _subtract()
         {
-            byte right = pop();
-            byte left = pop();
+            byte right = _pop();
+            byte left = _pop();
 
-            push((byte)(left - right)); //assume we won't overflow
+            _push((byte)(left - right)); //assume we won't overflow
         }
 
-        private void multiply()
+        private void _multiply()
         {
-            byte right = pop();
-            byte left = pop();
+            byte right = _pop();
+            byte left = _pop();
 
-            push((byte)(left * right)); //assume we won't overflow
+            _push((byte)(left * right)); //assume we won't overflow
         }
 
-        private void divide()
+        private void _divide()
         {
-            byte right = pop();
-            byte left = pop();
+            byte right = _pop();
+            byte left = _pop();
 
-            push((byte)(left / right)); //assume we won't overflow
+            _push((byte)(left / right)); //assume we won't overflow
         }
 
-        private void @if()
+        private void _if()
         {
-            byte value = pop();
+            byte value = _pop();
             ifs.Push(value != 0);
         }
 
-        private void endIf()
+        private void _endIf()
         {
             ifs.Pop();
         }
 
-        private void @for(int i)
+        private void _for(int i)
         {
-            byte value = pop();
+            byte value = _pop();
 
             indexesWhereForStarted.Push(i);
             forCounts.Push(value);
@@ -177,7 +172,7 @@ namespace ByteCodeVirtualMachine
             Console.WriteLine("Loop " + value + " times.");
         }
 
-        private void endFor(ref int i)
+        private void _endFor(ref int i)
         {
             byte currentCount = forCounts.Pop();
             //if this was the last loop
@@ -200,11 +195,11 @@ namespace ByteCodeVirtualMachine
             }
         }
 
-        private void defArray()
+        private void _defArray()
         {
-            byte length = pop();
-            byte id = pop();
-            byte typeId = pop();
+            byte length = _pop();
+            byte id = _pop();
+            byte typeId = _pop();
 
             //set the type of the array so user doesn't have to pass it in again on set
             arrayTypes[id] = typeId;
@@ -222,20 +217,20 @@ namespace ByteCodeVirtualMachine
             Console.WriteLine("type_" + typeId + "[] array_" + id + " = new type_" + typeId + "[" + length + "]");
         }
 
-        private void getArrayLength()
+        private void _getArrayLength()
         {
-            byte id = pop();
+            byte id = _pop();
 
             byte length = (byte)arrays[id].Length;
 
             Console.WriteLine("array_" + id + " has length of " + length);
-            push(length);
+            _push(length);
         }
 
-        private void getArrayValueAtIndex()
+        private void _getArrayValueAtIndex()
         {
-            byte index = pop();
-            byte id = pop();
+            byte index = _pop();
+            byte id = _pop();
 
             byte typeId = arrayTypes[id];
 
@@ -245,7 +240,7 @@ namespace ByteCodeVirtualMachine
             for (int field = 0; field < numFields; field++)
             {
                 byte value = arrays[id][index][field];
-                push(value);
+                _push(value);
 
                 if (field == numFields - 1)
                     Console.WriteLine(value + "]");
@@ -254,10 +249,10 @@ namespace ByteCodeVirtualMachine
             }
         }
 
-        private void setArrayValueAtIndex()
+        private void _setArrayValueAtIndex()
         {
-            byte id = pop();
-            byte index = pop();
+            byte id = _pop();
+            byte index = _pop();
 
             byte typeId = arrayTypes[id];
 
@@ -266,7 +261,7 @@ namespace ByteCodeVirtualMachine
             Console.Write("array_" + id + "[" + index + "]" + " = [");
             for (int field = 0; field < numFields; field++)
             {
-                byte value = pop();
+                byte value = _pop();
                 arrays[id][index][field] = value;
 
                 if (field == numFields - 1)
@@ -276,10 +271,10 @@ namespace ByteCodeVirtualMachine
             }
         }
 
-        private void defType()
+        private void _defType()
         {
-            byte numBytes = pop();
-            byte id = pop();
+            byte numBytes = _pop();
+            byte id = _pop();
 
             //push to arrays table
             types[id] = numBytes;
@@ -287,10 +282,10 @@ namespace ByteCodeVirtualMachine
             Console.WriteLine("type_" + id + " = new type[" + numBytes + "]");
         }
 
-        private void defVar()
+        private void _defVar()
         {
-            byte id = pop();
-            byte typeId = pop();
+            byte id = _pop();
+            byte typeId = _pop();
 
             varTypes[id] = typeId;
 
@@ -301,9 +296,9 @@ namespace ByteCodeVirtualMachine
             Console.WriteLine("type_" + typeId + " var_" + id + " = new type_" + typeId + "()");
         }
 
-        private void getVar()
+        private void _getVar()
         {
-            byte id = pop();
+            byte id = _pop();
 
             byte typeId = varTypes[id];
 
@@ -313,7 +308,7 @@ namespace ByteCodeVirtualMachine
             for (int field = 0; field < numFields; field++)
             {
                 byte value = vars[id][field];
-                push(value);
+                _push(value);
 
                 if (field == numFields - 1)
                     Console.WriteLine(value + "]");
@@ -322,9 +317,9 @@ namespace ByteCodeVirtualMachine
             }
         }
 
-        private void setVar()
+        private void _setVar()
         {
-            byte id = pop();
+            byte id = _pop();
 
             byte typeId = varTypes[id];
 
@@ -333,7 +328,7 @@ namespace ByteCodeVirtualMachine
             Console.Write("var_" + id + " = [");
             for (int field = 0; field < numFields; field++)
             {
-                byte value = pop();
+                byte value = _pop();
                 vars[id][field] = value;
 
                 if (field == numFields - 1)
@@ -343,21 +338,7 @@ namespace ByteCodeVirtualMachine
             }
         }
 
-        private void getStat()
-        {
-            byte stat = pop();
-            push(tempGetStatValue(stat));
-        }
-
-        private void setStat()
-        {
-            byte value = pop();
-            byte stat = pop();
-
-            tempSetStatValue(stat, value);
-        }
-
-        private void push(byte value)
+        private void _push(byte value)
         {
             //check for overflow
             if (_stackSize >= MAX_STACK_SIZE)
@@ -366,7 +347,7 @@ namespace ByteCodeVirtualMachine
             _stack[_stackSize++] = value;
         }
 
-        private byte pop()
+        private byte _pop()
         {
             //check if empty
             if (_stackSize <= 0)
@@ -398,16 +379,6 @@ namespace ByteCodeVirtualMachine
             }
             output += "]";
             return output;
-        }
-
-        private byte tempGetStatValue(byte stat)
-        {
-            return 1;
-        }
-
-        private void tempSetStatValue(byte stat, byte value)
-        {
-            //TOOD: set
         }
     }
 }

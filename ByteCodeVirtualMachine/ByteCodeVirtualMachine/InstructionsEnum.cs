@@ -19,7 +19,5 @@
         DefVar,
         GetVar,
         SetVar,
-        GetStat,
-        SetStat,
     }
 }
