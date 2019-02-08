@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BytecodeVirtualMachine", "ByteCodeVirtualMachine\BytecodeVirtualMachine.csproj", "{336E41C5-40AC-4B2B-8B5B-414B73A6C806}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BytecodeVirtualMachine", "BytecodeVirtualMachine\BytecodeVirtualMachine.csproj", "{336E41C5-40AC-4B2B-8B5B-414B73A6C806}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BytecodeVirtualMachine.Tests", "ByteCodeVirtualMachine.Tests\BytecodeVirtualMachine.Tests.csproj", "{A51BC493-E404-4198-954D-F4BC72A2BBB9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BytecodeVirtualMachine.Tests", "BytecodeVirtualMachine.Tests\BytecodeVirtualMachine.Tests.csproj", "{A51BC493-E404-4198-954D-F4BC72A2BBB9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
