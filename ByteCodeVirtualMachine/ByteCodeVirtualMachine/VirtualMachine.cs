@@ -17,9 +17,16 @@ namespace BytecodeVirtualMachine
         private bool _shouldReturnArray = false;
 
         private BytecodeArray[] arrays = new BytecodeArray[byte.MaxValue + 1];
+
         private byte[] types = new byte[byte.MaxValue + 1]; //TODO: could just replace this with the corresponding byte being the number of field...so 1 would have 1 field, 2 would have 2 fields, etc.
 
         private BytecodeClass[] vars = new BytecodeClass[byte.MaxValue + 1];
+
+        public VirtualMachine()
+        {
+            //type_0 is a native type (single byte)
+            types[0] = 1;
+        }
 
         public byte[] Interpret(byte[] bytes)
         {
@@ -67,6 +74,21 @@ namespace BytecodeVirtualMachine
                         break;
                     case InstructionsEnum.Divide:
                         _divide();
+                        break;
+                    case InstructionsEnum.LessThan:
+                        _lessThan();
+                        break;
+                    case InstructionsEnum.GreaterThan:
+                        _greaterThan();
+                        break;
+                    case InstructionsEnum.EqualTo:
+                        _equalTo();
+                        break;
+                    case InstructionsEnum.GreaterThanOrEqualTo:
+                        _greaterThanOrEqualTo();
+                        break;
+                    case InstructionsEnum.LessThanOrEqualTo:
+                        _lessThanOrEqualTo();
                         break;
                     case InstructionsEnum.If:
                         _if();
@@ -172,6 +194,45 @@ namespace BytecodeVirtualMachine
             byte left = _pop();
             
             _push((byte)(left / right)); //assume we won't overflow
+        }
+
+        private void _lessThan()
+        {
+            byte right = _pop();
+            byte left = _pop();
+
+            _push((byte)(left < right ? 1 : 0));
+        }
+
+        private void _greaterThan()
+        {
+            byte right = _pop();
+            byte left = _pop();
+
+            _push((byte)(left > right ? 1 : 0));
+        }
+
+        private void _equalTo()
+        {
+            byte right = _pop();
+            byte left = _pop();
+
+            _push((byte)(left == right ? 1 : 0));
+        }
+
+        private void _greaterThanOrEqualTo()
+        {
+            byte right = _pop();
+            byte left = _pop();
+
+            _push((byte)(left >= right ? 1 : 0));
+        }
+        private void _lessThanOrEqualTo()
+        {
+            byte right = _pop();
+            byte left = _pop();
+
+            _push((byte)(left <= right ? 1 : 0));
         }
 
         private void _if()
@@ -301,6 +362,9 @@ namespace BytecodeVirtualMachine
         {
             byte numBytes = _pop();
             byte id = _pop();
+
+            if (id == 0)
+                throw new Exception("type_0 is a native type and cannot be overwritten.");
 
             //push to arrays table
             types[id] = numBytes;

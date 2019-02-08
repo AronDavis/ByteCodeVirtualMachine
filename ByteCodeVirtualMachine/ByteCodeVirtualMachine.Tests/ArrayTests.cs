@@ -13,30 +13,30 @@ namespace BytecodeVirtualMachine.Tests
             byte[] data = new byte[]
             {
                 #region defType
-                    //set literal to 0 for type id
+                    //set literal to 1 for type id
                     (byte)InstructionsEnum.Literal,
-                    0,
+                    1,
 
                     //set literal to 2 for number of fields
                     (byte)InstructionsEnum.Literal,
                     2,
                 
-                    //define type_0 with 2 fields
+                    //define type_1 with 2 fields
                     (byte)InstructionsEnum.DefType,
                 #endregion
 
-                    //set an array of type_0 to be the return signature
+                    //set an array of type_1 to be the return signature
                     (byte)InstructionsEnum.Literal,
-                    0,
+                    1,
                     (byte)InstructionsEnum.GetType,
                     (byte)InstructionsEnum.Literal, // array = yes
                     1,
                     (byte)InstructionsEnum.ReturnSignature,
                     
                 #region defArray
-                    //set literal to 0 for type id
+                    //set literal to 1 for type_1
                     (byte)InstructionsEnum.Literal,
-                    0,
+                    1,
 
                     //set literal to 0 for array id
                     (byte)InstructionsEnum.Literal,
@@ -46,7 +46,7 @@ namespace BytecodeVirtualMachine.Tests
                     (byte)InstructionsEnum.Literal,
                     1,
 
-                    //define type_0[] array_0 = new type_0[]
+                    //define type_0[] array_0 = new type_1[]
                     (byte)InstructionsEnum.DefArray,
                 #endregion
 

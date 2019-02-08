@@ -48,11 +48,16 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LogicalComparisonTests\EqualToTests.cs" />
+    <Compile Include="LogicalComparisonTests\GreaterThanOrEqualToTests.cs" />
+    <Compile Include="LogicalComparisonTests\LessThanOrEqualToTests.cs" />
+    <Compile Include="LogicalComparisonTests\GreaterThanTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ArrayTests.cs" />
     <Compile Include="ForTests.cs" />
     <Compile Include="IfTests.cs" />
     <Compile Include="MathTests.cs" />
+    <Compile Include="LogicalComparisonTests\LessThanTests.cs" />
     <Compile Include="VariableTests.cs" />
   </ItemGroup>
   <ItemGroup>
