@@ -19,8 +19,7 @@ namespace BytecodeVirtualMachine
         private BytecodeArray[] arrays = new BytecodeArray[byte.MaxValue + 1];
         private byte[] types = new byte[byte.MaxValue + 1]; //TODO: could just replace this with the corresponding byte being the number of field...so 1 would have 1 field, 2 would have 2 fields, etc.
 
-        private byte[][] vars = new byte[byte.MaxValue + 1][]; //could be a dictionary...
-        private byte[] varTypes = new byte[byte.MaxValue + 1]; //could be a dictionary...
+        private BytecodeClass[] vars = new BytecodeClass[byte.MaxValue + 1];
 
         public byte[] Interpret(byte[] bytes)
         {
@@ -324,11 +323,13 @@ namespace BytecodeVirtualMachine
             byte id = _pop();
             byte typeId = _pop();
 
-            varTypes[id] = typeId;
-
             byte numFields = types[typeId];
 
-            vars[id] = new byte[numFields];
+            vars[id] = new BytecodeClass()
+            {
+                Type = typeId,
+                Fields = new byte[numFields]
+            };
 
             Console.WriteLine($"type_{typeId} var_{id} = new type_{typeId}()");
         }
@@ -337,20 +338,19 @@ namespace BytecodeVirtualMachine
         {
             byte id = _pop();
 
-            byte typeId = varTypes[id];
+            BytecodeClass variable = vars[id];
+            byte numFields = types[variable.Type];
 
-            byte numFields = types[typeId];
-
-            Console.Write("var_" + id + " has a value of [");
-            for (int field = 0; field < numFields; field++)
+            Console.Write($"var_{id} has a value of [");
+            for (int i = 0; i < numFields; i++)
             {
-                byte value = vars[id][field];
+                byte value = variable.Fields[i];
                 _push(value);
 
-                if (field == numFields - 1)
-                    Console.WriteLine(value + "]");
+                if (i == numFields - 1)
+                    Console.WriteLine($"{value}]");
                 else
-                    Console.Write(value + ", ");
+                    Console.Write($"{value}, ");
             }
         }
 
@@ -358,20 +358,19 @@ namespace BytecodeVirtualMachine
         {
             byte id = _pop();
 
-            byte typeId = varTypes[id];
+            BytecodeClass variable = vars[id];
+            byte numFields = types[variable.Type];
 
-            byte numFields = types[typeId];
-
-            Console.Write("var_" + id + " = [");
-            for (int field = 0; field < numFields; field++)
+            Console.Write($"var_{id} = [");
+            for (int i = 0; i < numFields; i++)
             {
                 byte value = _pop();
-                vars[id][field] = value;
+                variable.Fields[i] = value;
 
-                if (field == numFields - 1)
-                    Console.WriteLine(value + "]");
+                if (i == numFields - 1)
+                    Console.WriteLine($"{value}]");
                 else
-                    Console.Write(value + ", ");
+                    Console.Write($"{value}, ");
             }
         }
 
