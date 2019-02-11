@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BytecodeVirtualMachine.Tests
 {
-    //TODO: builder-style fluent API!
     internal static class TestHelper
     {
         public static void AddRange<T>(this List<T> list, params T[] items)
@@ -33,6 +33,19 @@ namespace BytecodeVirtualMachine.Tests
 
                 (byte)InstructionsEnum.ReturnSignature,
             };
+        }
+
+        internal static void AssertResultsEqual(IList<byte> expected, IList<byte> actual)
+        {
+            Assert.AreEqual(expected?.Count, actual?.Count);
+
+            if (expected == null)
+                return;
+
+            for(int i = 0; i < expected.Count; i++)
+            {
+                Assert.AreEqual(expected[i], actual[i]);
+            }
         }
 
     }

@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using BytecodeVirtualMachine.FluentInterface;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 
 namespace BytecodeVirtualMachine.Tests
@@ -11,26 +12,20 @@ namespace BytecodeVirtualMachine.Tests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            List<byte> data = new List<byte>();
+            List<byte> data = new InstructionsBuilder()
+                .Main()
+                .ReturnSignature(1)
+                .Body(b =>
+                {
+                    b.Add()
+                        .Left(3)
+                        .Right(5);
 
-            //set return type to type_1
-            data.AddRange(TestHelper.GetReturnSignatureInstructions(1));
+                    b.Return();
+                })
+                .ToInstructions();
 
-            data.AddRange<byte>(
-                //set literal to 3 so we can confirm value later
-                (byte)InstructionsEnum.Literal,
-                3,
-
-                //set literal to 5 so we can confirm value later
-                (byte)InstructionsEnum.Literal,
-                5,
-
-                //add 3 + 5
-                (byte)InstructionsEnum.Add,
-
-                //return
-                (byte)InstructionsEnum.Return
-            );
+            var fluentResults = vm.Interpret(data);
 
             var results = vm.Interpret(data);
 
@@ -43,30 +38,22 @@ namespace BytecodeVirtualMachine.Tests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            List<byte> data = new List<byte>();
+            List<byte> data = new InstructionsBuilder()
+                .Main()
+                .ReturnSignature(1)
+                .Body(b =>
+                {
+                    b.Subtract()
+                        .Left(5)
+                        .Right(3);
 
-            //set return type to type_1
-            data.AddRange(TestHelper.GetReturnSignatureInstructions(1));
-
-            data.AddRange<byte>(
-                //set literal to 5 so we can confirm value later
-                (byte)InstructionsEnum.Literal,
-                5,
-
-                //set literal to 3 so we can confirm value later
-                (byte)InstructionsEnum.Literal,
-                3,
-
-                //subtract 5-3
-                (byte)InstructionsEnum.Subtract,
-
-                //return
-                (byte)InstructionsEnum.Return
-            );
+                    b.Return();
+                })
+                .ToInstructions();
 
             var results = vm.Interpret(data);
 
-            //confirm 3 + 5
+            //confirm 5-3
             Assert.AreEqual(2, results[0]);
         }
 
@@ -75,26 +62,18 @@ namespace BytecodeVirtualMachine.Tests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            List<byte> data = new List<byte>();
+            List<byte> data = new InstructionsBuilder()
+                .Main()
+                .ReturnSignature(1)
+                .Body(b =>
+                {
+                    b.Multiply()
+                        .Left(5)
+                        .Right(3);
 
-            //set return type to type_1
-            data.AddRange(TestHelper.GetReturnSignatureInstructions(1));
-
-            data.AddRange<byte>(
-                //set literal to 5 so we can confirm value later
-                (byte)InstructionsEnum.Literal,
-                5,
-
-                //set literal to 3 so we can confirm value later
-                (byte)InstructionsEnum.Literal,
-                3,
-
-                //multiply 5 * 3
-                (byte)InstructionsEnum.Multiply,
-
-                //return
-                (byte)InstructionsEnum.Return
-            );
+                    b.Return();
+                })
+                .ToInstructions();
 
             var results = vm.Interpret(data);
 
@@ -107,26 +86,18 @@ namespace BytecodeVirtualMachine.Tests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            List<byte> data = new List<byte>();
+            List<byte> data = new InstructionsBuilder()
+                .Main()
+                .ReturnSignature(1)
+                .Body(b =>
+                {
+                    b.Divide()
+                        .Left(6)
+                        .Right(2);
 
-            //set return type to type_1
-            data.AddRange(TestHelper.GetReturnSignatureInstructions(1));
-
-            data.AddRange<byte>(
-                //set literal to 5 so we can confirm value later
-                (byte)InstructionsEnum.Literal,
-                6,
-
-                //set literal to 3 so we can confirm value later
-                (byte)InstructionsEnum.Literal,
-                2,
-
-                //divide 6/2
-                (byte)InstructionsEnum.Divide,
-
-                //return
-                (byte)InstructionsEnum.Return
-            );
+                    b.Return();
+                })
+                .ToInstructions();
 
             var results = vm.Interpret(data);
 

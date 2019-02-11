@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using BytecodeVirtualMachine.FluentInterface;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 
 namespace BytecodeVirtualMachine.Tests
@@ -84,6 +85,41 @@ namespace BytecodeVirtualMachine.Tests
 
             Assert.AreEqual(3, results[0]);
             Assert.AreEqual(2, results[1]);
+
+
+            List<byte> fluentData = new InstructionsBuilder()
+                .Main()
+                .ReturnSignature(2, true)
+                .Body(b =>
+                {
+                    byte typeId = 2;
+                    byte arrayId = 0;
+
+                    b.DefType()
+                        .Id(typeId)
+                        .NumberOfFields(2);
+
+                    b.DefArray()
+                        .Type(typeId)
+                        .Id(arrayId)
+                        .Length(1);
+
+                    b.SetArrayValueAtIndex()
+                        .Value(2)
+                        .Value(3)
+                        .Id(arrayId)
+                        .Index(0);
+
+                    b.GetArray()
+                        .Id(arrayId);
+
+                    b.Return();
+                })
+                .ToInstructions();
+
+            var fluentResults = vm.Interpret(fluentData);
+
+            TestHelper.AssertResultsEqual(results, fluentResults);
         }
     }
 }

@@ -48,6 +48,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FluentInterfaceTests\MathInstructionTests.cs" />
     <Compile Include="FunctionTests.cs" />
     <Compile Include="LogicalComparisonTests\EqualToTests.cs" />
     <Compile Include="LogicalComparisonTests\GreaterThanOrEqualToTests.cs" />

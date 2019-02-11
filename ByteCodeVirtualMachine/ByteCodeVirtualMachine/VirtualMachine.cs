@@ -21,6 +21,7 @@ namespace BytecodeVirtualMachine
         //TODO: could just replace this with the corresponding byte being the number of field...so 1 would have 1 field, 2 would have 2 fields, etc.
         private byte[] _types = new byte[byte.MaxValue + 1];
 
+        //TODO: vars and arrays should probably be the same thing
         private BytecodeClass[] vars = new BytecodeClass[byte.MaxValue + 1];
 
         public Action<VirtualMachine>[] CustomFunctions;
