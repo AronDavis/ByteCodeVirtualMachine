@@ -25,6 +25,9 @@
         DefVar,
         GetVar,
         SetVar,
+        DefFunction,
+        EndDefFunction,
+        Function,
         CustomFunction,
         ReturnSignature,
         Return

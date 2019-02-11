@@ -11,9 +11,7 @@ namespace BytecodeVirtualMachine
         private Stack<bool> ifs = new Stack<bool>();
         private Stack<int> indexesWhereForStarted = new Stack<int>();
         private Stack<byte> forCounts = new Stack<byte>();
-
-        private byte _returnType = 0;
-        private bool _shouldReturnArray = false;
+        private BytecodeFunction[] _functions = new BytecodeFunction[MAX_STACK_SIZE];
 
         private BytecodeArray[] _arrays = new BytecodeArray[byte.MaxValue + 1];
 
@@ -33,13 +31,13 @@ namespace BytecodeVirtualMachine
             _types[1] = 1;
         }
 
-        public byte[] Interpret(IList<byte> bytes)
+        private byte[] _interpretFunction(BytecodeFunction function)
         {
             Console.WriteLine(this);
-            int size = bytes.Count;
+            int size = function.Instructions.Count;
             for (int i = 0; i < size; i++)
             {
-                InstructionsEnum instruction = (InstructionsEnum)bytes[i];
+                InstructionsEnum instruction = (InstructionsEnum)function.Instructions[i];
 
                 //if we're in an if and the status is false
                 if (ifs.Count > 0 && ifs.Peek() == false)
@@ -63,10 +61,10 @@ namespace BytecodeVirtualMachine
                 switch (instruction)
                 {
                     case InstructionsEnum.Literal:
-                        _literal(bytes, ref i);
+                        _literal(function.Instructions, ref i);
                         break;
                     case InstructionsEnum.ReturnSignature:
-                        _returnSignature();
+                        _returnSignature(function);
                         break;
                     case InstructionsEnum.Add: //should be preceded by two values to add
                         _add();
@@ -134,23 +132,35 @@ namespace BytecodeVirtualMachine
                     case InstructionsEnum.SetVar:
                         _setVar();
                         break;
+                    case InstructionsEnum.DefFunction:
+                        _defFunction(function.Instructions, ref i);
+                        break;
+                    case InstructionsEnum.Function:
+                        _function();
+                        break;
                     case InstructionsEnum.CustomFunction:
                         _customFunction();
                         break;
                     case InstructionsEnum.Return:
-                        return _return();
+                        return _return(function);
                 }
 
                 Console.WriteLine(this);
             }
 
-            if (_returnType > 0)
+            if (function.ReturnType > 0)
                 throw new Exception("Missing return statement.");
-            
+
             return null;
         }
 
-        private void _literal(IList<byte> bytes, ref int i)
+        public byte[] Interpret(IList<byte> bytes) //TODO: should take a stack?
+        {
+            BytecodeFunction function = new BytecodeFunction(bytes);
+            return _interpretFunction(function);
+        }
+
+        private void _literal(List<byte> bytes, ref int i)
         {
             // Read the next byte from the bytecode.
             byte value = bytes[++i];
@@ -161,17 +171,17 @@ namespace BytecodeVirtualMachine
             Console.WriteLine("Setting literal to " + value);
         }
 
-        private void _returnSignature()
+        private void _returnSignature(BytecodeFunction function)
         {
-            _returnType = Pop();
+            function.ReturnType = Pop();
 
-            if(_returnType > 0)
-                _shouldReturnArray = Pop() == 1;
+            if(function.ReturnType > 0)
+                function.ShouldReturnArray = Pop() == 1;
             
-            if (_shouldReturnArray)
-                Console.Write($"Setting signature to return type_{_returnType}[]");
+            if (function.ShouldReturnArray)
+                Console.WriteLine($"Setting signature to return type_{function.ReturnType}[]");
             else
-                Console.Write($"Setting signature to return type_{_returnType}");
+                Console.WriteLine($"Setting signature to return type_{function.ReturnType}");
         }
 
         private void _add()
@@ -466,6 +476,65 @@ namespace BytecodeVirtualMachine
             }
         }
 
+        private void _defFunction(List<byte> bytes, ref int i)
+        {
+            byte id = Pop();
+
+            BytecodeFunction function = new BytecodeFunction();
+
+            bool shouldEscapeWhileLoop = false;
+            while (i < bytes.Count)
+            {
+                // Read the next byte from the bytecode.
+                byte value = bytes[++i];
+                InstructionsEnum instruction = (InstructionsEnum)value;
+
+                //skip all instructions until we hit end function (still shift i for literals though)
+                switch (instruction)
+                {
+                    case InstructionsEnum.EndDefFunction:
+                        shouldEscapeWhileLoop = true;
+                        break;
+                    case InstructionsEnum.Literal:
+                        //TODO: consider order and things
+                        function.Instructions.Add(value);
+                        function.Instructions.Add(bytes[++i]);
+                        break;
+                    default:
+                        //TODO: consider order and things
+                        function.Instructions.Add(value);
+                        break;
+                }
+
+                if (shouldEscapeWhileLoop)
+                    break;                
+            }
+            
+            Console.WriteLine($"Defining function_{id}");
+            _functions[id] = function;
+        }
+
+        private void _function()
+        {
+            byte id = Pop();
+
+            BytecodeFunction function = _functions[id];
+
+            if (function == null)
+                throw new Exception($"function_{id} not defined.");
+
+            Console.WriteLine($"Running function_{id}");
+
+            byte[] results = Interpret(function.Instructions);
+
+            if (results == null || results.Length == 0)
+                return;
+
+            //TODO: check that this is all happening in order
+            for (int i = 0; i < results.Length; i++)
+                Push(results[0]);
+        }
+
         private void _customFunction()
         {
             byte id = Pop();
@@ -482,9 +551,9 @@ namespace BytecodeVirtualMachine
             customFunction(this);
         }
 
-        private byte[] _return()
+        private byte[] _return(BytecodeFunction function)
         {
-            if (_returnType == 0)
+            if (function.ReturnType == 0)
             {
                 Console.Write($"Returning null");
                 return null;
@@ -492,12 +561,12 @@ namespace BytecodeVirtualMachine
 
             byte[] returnBytes;
 
-            if (_shouldReturnArray)
+            if (function.ShouldReturnArray)
             {
                 byte arrayLength = Pop();
-                byte numFields = _types[_returnType];
+                byte numFields = _types[function.ReturnType];
 
-                Console.Write($"Returning a type_{_returnType}[]");
+                Console.Write($"Returning a type_{function.ReturnType}[]");
 
                 returnBytes = new byte[arrayLength * numFields];
 
@@ -510,11 +579,11 @@ namespace BytecodeVirtualMachine
                 return returnBytes;
             }
 
-            Console.Write($"Returning a type_{_returnType}");
+            Console.Write($"Returning a type_{function.ReturnType}");
 
-            returnBytes = new byte[_returnType];
+            returnBytes = new byte[function.ReturnType];
 
-            for (byte i = 0; i < _returnType; i++)
+            for (byte i = 0; i < function.ReturnType; i++)
                 returnBytes[i] = Pop();
 
             return returnBytes;
