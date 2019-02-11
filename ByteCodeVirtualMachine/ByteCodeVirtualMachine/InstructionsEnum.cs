@@ -25,6 +25,7 @@
         DefVar,
         GetVar,
         SetVar,
+        CustomFunction,
         ReturnSignature,
         Return
     }

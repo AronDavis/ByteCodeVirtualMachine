@@ -52,6 +52,7 @@
     <Compile Include="LogicalComparisonTests\GreaterThanOrEqualToTests.cs" />
     <Compile Include="LogicalComparisonTests\LessThanOrEqualToTests.cs" />
     <Compile Include="LogicalComparisonTests\GreaterThanTests.cs" />
+    <Compile Include="CustomFunctionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ArrayTests.cs" />
     <Compile Include="ForTests.cs" />

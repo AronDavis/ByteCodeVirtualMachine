@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace BytecodeVirtualMachine
 {
-    //TODO: allow custom functions (CustomFunctionEnum, #) then insert custom functions via an exposed Array
     public class VirtualMachine
     {
         public const int MAX_STACK_SIZE = 128;
@@ -18,9 +17,12 @@ namespace BytecodeVirtualMachine
 
         private BytecodeArray[] _arrays = new BytecodeArray[byte.MaxValue + 1];
 
-        private byte[] _types = new byte[byte.MaxValue + 1]; //TODO: could just replace this with the corresponding byte being the number of field...so 1 would have 1 field, 2 would have 2 fields, etc.
+        //TODO: could just replace this with the corresponding byte being the number of field...so 1 would have 1 field, 2 would have 2 fields, etc.
+        private byte[] _types = new byte[byte.MaxValue + 1];
 
         private BytecodeClass[] vars = new BytecodeClass[byte.MaxValue + 1];
+
+        public Action<VirtualMachine>[] CustomFunctions;
 
         public VirtualMachine()
         {
@@ -69,13 +71,13 @@ namespace BytecodeVirtualMachine
                     case InstructionsEnum.Add: //should be preceded by two values to add
                         _add();
                         break;
-                    case InstructionsEnum.Subtract: //should be preceded by two values to add
+                    case InstructionsEnum.Subtract: //should be preceded by two values to subtract
                         _subtract();
                         break;
-                    case InstructionsEnum.Multiply:
+                    case InstructionsEnum.Multiply: //should be preceded by two values to multiply
                         _multiply();
                         break;
-                    case InstructionsEnum.Divide:
+                    case InstructionsEnum.Divide: //should be preceded by two values to divide
                         _divide();
                         break;
                     case InstructionsEnum.LessThan:
@@ -132,6 +134,9 @@ namespace BytecodeVirtualMachine
                     case InstructionsEnum.SetVar:
                         _setVar();
                         break;
+                    case InstructionsEnum.CustomFunction:
+                        _customFunction();
+                        break;
                     case InstructionsEnum.Return:
                         return _return();
                 }
@@ -151,17 +156,17 @@ namespace BytecodeVirtualMachine
             byte value = bytes[++i];
 
             //push to stack
-            _push(value);
+            Push(value);
 
             Console.WriteLine("Setting literal to " + value);
         }
 
         private void _returnSignature()
         {
-            _returnType = _pop();
+            _returnType = Pop();
 
             if(_returnType > 0)
-                _shouldReturnArray = _pop() == 1;
+                _shouldReturnArray = Pop() == 1;
             
             if (_shouldReturnArray)
                 Console.Write($"Setting signature to return type_{_returnType}[]");
@@ -171,80 +176,80 @@ namespace BytecodeVirtualMachine
 
         private void _add()
         {
-            byte right = _pop();
-            byte left = _pop();
+            byte right = Pop();
+            byte left = Pop();
 
-            _push((byte)(left + right)); //assume we won't overflow
+            Push((byte)(left + right)); //assume we won't overflow
 
             Console.WriteLine("Adding " + right + " + " + left);
         }
 
         private void _subtract()
         {
-            byte right = _pop();
-            byte left = _pop();
+            byte right = Pop();
+            byte left = Pop();
 
-            _push((byte)(left - right)); //assume we won't overflow
+            Push((byte)(left - right)); //assume we won't overflow
         }
 
         private void _multiply()
         {
-            byte right = _pop();
-            byte left = _pop();
+            byte right = Pop();
+            byte left = Pop();
 
-            _push((byte)(left * right)); //assume we won't overflow
+            Push((byte)(left * right)); //assume we won't overflow
         }
 
         private void _divide()
         {
-            byte right = _pop();
-            byte left = _pop();
+            byte right = Pop();
+            byte left = Pop();
             
-            _push((byte)(left / right)); //assume we won't overflow
+            Push((byte)(left / right)); //assume we won't overflow
         }
 
         private void _lessThan()
         {
-            byte right = _pop();
-            byte left = _pop();
+            byte right = Pop();
+            byte left = Pop();
 
-            _push((byte)(left < right ? 1 : 0));
+            Push((byte)(left < right ? 1 : 0));
         }
 
         private void _greaterThan()
         {
-            byte right = _pop();
-            byte left = _pop();
+            byte right = Pop();
+            byte left = Pop();
 
-            _push((byte)(left > right ? 1 : 0));
+            Push((byte)(left > right ? 1 : 0));
         }
 
         private void _equalTo()
         {
-            byte right = _pop();
-            byte left = _pop();
+            byte right = Pop();
+            byte left = Pop();
 
-            _push((byte)(left == right ? 1 : 0));
+            Push((byte)(left == right ? 1 : 0));
         }
 
         private void _greaterThanOrEqualTo()
         {
-            byte right = _pop();
-            byte left = _pop();
+            byte right = Pop();
+            byte left = Pop();
 
-            _push((byte)(left >= right ? 1 : 0));
+            Push((byte)(left >= right ? 1 : 0));
         }
         private void _lessThanOrEqualTo()
         {
-            byte right = _pop();
-            byte left = _pop();
+            byte right = Pop();
+            byte left = Pop();
 
-            _push((byte)(left <= right ? 1 : 0));
+            Push((byte)(left <= right ? 1 : 0));
         }
 
         private void _if()
         {
-            byte value = _pop();
+            byte value = Pop();
             ifs.Push(value != 0);
         }
 
@@ -255,7 +260,7 @@ namespace BytecodeVirtualMachine
 
         private void _for(int i)
         {
-            byte value = _pop();
+            byte value = Pop();
 
             indexesWhereForStarted.Push(i);
             forCounts.Push(value);
@@ -288,9 +293,9 @@ namespace BytecodeVirtualMachine
 
         private void _defArray()
         {
-            byte length = _pop();
-            byte id = _pop();
-            byte typeId = _pop();
+            byte length = Pop();
+            byte id = Pop();
+            byte typeId = Pop();
 
             if (typeId == 0)
                 throw new Exception("Cannot have null (type_0) array type.");
@@ -318,7 +323,7 @@ namespace BytecodeVirtualMachine
 
         private void _getArray()
         {
-            byte arrayId = _pop();
+            byte arrayId = Pop();
 
             BytecodeArray array = _arrays[arrayId];
             byte numFields = _types[array.Type];
@@ -327,29 +332,29 @@ namespace BytecodeVirtualMachine
             {
                 BytecodeClass item = array.Items[i];
                 for (int j = 0; j < numFields; j++)
-                    _push(item.Fields[j]);
+                    Push(item.Fields[j]);
             }
 
             //push length so we can read it back
-            _push((byte)array.Items.Length);
+            Push((byte)array.Items.Length);
 
             Console.WriteLine($"Retrieved array_{arrayId}.");
         }
 
         private void _getArrayLength()
         {
-            byte id = _pop();
+            byte id = Pop();
 
             byte length = (byte)_arrays[id].Items.Length;
 
             Console.WriteLine("array_" + id + " has length of " + length);
-            _push(length);
+            Push(length);
         }
 
         private void _getArrayValueAtIndex()
         {
-            byte itemIndex = _pop();
-            byte arrayId = _pop();
+            byte itemIndex = Pop();
+            byte arrayId = Pop();
 
             BytecodeArray array = _arrays[arrayId];
             BytecodeClass item = array.Items[itemIndex];
@@ -358,7 +363,7 @@ namespace BytecodeVirtualMachine
             for (int i = 0; i < item.Fields.Length; i++)
             {
                 byte value = item.Fields[i];
-                _push(value);
+                Push(value);
 
                 if (i == item.Fields.Length - 1)
                     Console.WriteLine($"{value}]");
@@ -369,8 +374,8 @@ namespace BytecodeVirtualMachine
 
         private void _setArrayValueAtIndex()
         {
-            byte itemIndex = _pop();
-            byte arrayId = _pop();
+            byte itemIndex = Pop();
+            byte arrayId = Pop();
 
             BytecodeArray array = _arrays[arrayId];
             BytecodeClass item = array.Items[itemIndex];
@@ -378,7 +383,7 @@ namespace BytecodeVirtualMachine
             Console.Write($"array_{arrayId}[{itemIndex}] = [");
             for (int field = 0; field < item.Fields.Length; field++)
             {
-                byte value = _pop();
+                byte value = Pop();
                 item.Fields[field] = value;
 
                 if (field == item.Fields.Length - 1)
@@ -390,8 +395,8 @@ namespace BytecodeVirtualMachine
 
         private void _defType()
         {
-            byte numBytes = _pop();
-            byte id = _pop();
+            byte numBytes = Pop();
+            byte id = Pop();
 
             if (id <= 1)
                 throw new Exception("type_0 and type_1 are native types and cannot be overwritten.");
@@ -404,8 +409,8 @@ namespace BytecodeVirtualMachine
 
         private void _defVar()
         {
-            byte id = _pop();
-            byte typeId = _pop();
+            byte id = Pop();
+            byte typeId = Pop();
 
             if (typeId == 0)
                 throw new Exception("Cannot have a null (type_0) variable type.");
@@ -423,7 +428,7 @@ namespace BytecodeVirtualMachine
 
         private void _getVar()
         {
-            byte id = _pop();
+            byte id = Pop();
 
             BytecodeClass variable = vars[id];
             byte numFields = _types[variable.Type];
@@ -432,7 +437,7 @@ namespace BytecodeVirtualMachine
             for (int i = 0; i < numFields; i++)
             {
                 byte value = variable.Fields[i];
-                _push(value);
+                Push(value);
 
                 if (i == numFields - 1)
                     Console.WriteLine($"{value}]");
@@ -443,7 +448,7 @@ namespace BytecodeVirtualMachine
 
         private void _setVar()
         {
-            byte id = _pop();
+            byte id = Pop();
 
             BytecodeClass variable = vars[id];
             byte numFields = _types[variable.Type];
@@ -451,7 +456,7 @@ namespace BytecodeVirtualMachine
             Console.Write($"var_{id} = [");
             for (int i = 0; i < numFields; i++)
             {
-                byte value = _pop();
+                byte value = Pop();
                 variable.Fields[i] = value;
 
                 if (i == numFields - 1)
@@ -459,6 +464,22 @@ namespace BytecodeVirtualMachine
                 else
                     Console.Write($"{value}, ");
             }
+        }
+
+        private void _customFunction()
+        {
+            byte id = Pop();
+
+            if (CustomFunctions == null || CustomFunctions.Length - 1 < id)
+                throw new Exception($"Custom Function {id} is not defined.");
+
+            Action<VirtualMachine> customFunction = CustomFunctions[id];
+
+            if(customFunction == null)
+                throw new Exception($"Custom Function {id} is not defined.");
+
+            Console.WriteLine($"Running Custom Function {id}");
+            customFunction(this);
         }
 
         private byte[] _return()
@@ -473,7 +494,7 @@ namespace BytecodeVirtualMachine
 
             if (_shouldReturnArray)
             {
-                byte arrayLength = _pop();
+                byte arrayLength = Pop();
                 byte numFields = _types[_returnType];
 
                 Console.Write($"Returning a type_{_returnType}[]");
@@ -483,7 +504,7 @@ namespace BytecodeVirtualMachine
                 for (int i = 0; i < arrayLength; i++)
                 {
                     for (int j = 0; j < numFields; j++)
-                        returnBytes[(i * numFields) + (numFields-1-j)] = _pop(); //(numFields-1-j) is to ensure that we reverse the order they would otherwise appear in in the stack
+                        returnBytes[(i * numFields) + (numFields-1-j)] = Pop(); //(numFields-1-j) is to ensure that we reverse the order they would otherwise appear in in the stack
                 }
                     
                 return returnBytes;
@@ -494,12 +515,12 @@ namespace BytecodeVirtualMachine
             returnBytes = new byte[_returnType];
 
             for (byte i = 0; i < _returnType; i++)
-                returnBytes[i] = _pop();
+                returnBytes[i] = Pop();
 
             return returnBytes;
         }
 
-        private void _push(byte value)
+        public void Push(byte value)
         {
             //check for overflow
             if (_stackSize >= MAX_STACK_SIZE)
@@ -508,22 +529,13 @@ namespace BytecodeVirtualMachine
             _stack[_stackSize++] = value;
         }
 
-        private byte _pop()
+        public byte Pop()
         {
             //check if empty
             if (_stackSize <= 0)
                 throw new IndexOutOfRangeException("Cannot pop from an empty stack!");
 
             return _stack[--_stackSize];
-        }
-
-        private byte _peek()
-        {
-            //check if empty
-            if (_stackSize <= 0)
-                throw new IndexOutOfRangeException("Cannot peek an empty stack!");
-
-            return _stack[_stackSize - 1];
         }
 
         public override string ToString()
