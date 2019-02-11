@@ -8,6 +8,9 @@ namespace BytecodeVirtualMachine
         public const int MAX_STACK_SIZE = 128;
         private int _stackSize = 0;
         private byte[] _stack = new byte[MAX_STACK_SIZE];
+
+        //TODO: move all of this stuff to be inside of BytecodeFunction so we can have things like scope?
+
         private Stack<bool> ifs = new Stack<bool>();
         private Stack<int> indexesWhereForStarted = new Stack<int>();
         private Stack<byte> forCounts = new Stack<byte>();
