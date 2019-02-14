@@ -9,32 +9,7 @@ namespace BytecodeVirtualMachine.Tests
         {
             list.AddRange(items);
         }
-
-        internal static byte[] GetReturnSignatureInstructions(byte typeId, bool isArray = false)
-        {
-            if(typeId == 0)
-                return new byte[]
-                {
-                    //set literal to define no return type
-                    (byte)InstructionsEnum.Literal,
-                    typeId,
-                    (byte)InstructionsEnum.ReturnSignature,
-                };
-
-            return new byte[]
-            {
-                //set literal to define if return type is an array
-                (byte)InstructionsEnum.Literal,
-                (byte)(isArray ? 1 : 0),
-
-                //set literal to define the return type
-                (byte)InstructionsEnum.Literal,
-                typeId,
-
-                (byte)InstructionsEnum.ReturnSignature,
-            };
-        }
-
+        
         internal static void AssertResultsEqual(IList<byte> expected, IList<byte> actual)
         {
             Assert.AreEqual(expected?.Count, actual?.Count);
