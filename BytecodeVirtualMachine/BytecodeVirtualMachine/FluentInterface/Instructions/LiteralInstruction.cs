@@ -2,7 +2,7 @@
 
 namespace BytecodeVirtualMachine.FluentInterface.Instructions
 {
-    public class LiteralInstruction : IInstruction
+    public class LiteralInstruction : InstructionBase
     {
         byte _val;
         public LiteralInstruction(byte val)
@@ -10,7 +10,7 @@ namespace BytecodeVirtualMachine.FluentInterface.Instructions
             _val = val;
         }
 
-        public void ToInstructions(List<byte> instructions)
+        public override void ToInstructions(List<byte> instructions)
         {
             instructions.Add((byte)InstructionsEnum.Literal);
             instructions.Add(_val);

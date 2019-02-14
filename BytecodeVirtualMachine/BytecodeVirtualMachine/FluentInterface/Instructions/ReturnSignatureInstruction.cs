@@ -2,7 +2,7 @@
 
 namespace BytecodeVirtualMachine.FluentInterface.Instructions
 {
-    public class ReturnSignatureInstruction : IInstruction
+    public class ReturnSignatureInstruction : InstructionBase
     {
         private byte _typeId;
         private bool _isArray;
@@ -13,7 +13,7 @@ namespace BytecodeVirtualMachine.FluentInterface.Instructions
             _isArray = isArray;
         }
 
-        public void ToInstructions(List<byte> instructions)
+        public override void ToInstructions(List<byte> instructions)
         {
             if (_typeId == 0)
             {

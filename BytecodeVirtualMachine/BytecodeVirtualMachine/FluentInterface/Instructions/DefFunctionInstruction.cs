@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace BytecodeVirtualMachine.FluentInterface.Instructions
 {
-    public class DefFunctionInstruction : IInstruction
+    public class DefFunctionInstruction : InstructionBase
     {
         private ReturnSignatureInstruction _returnSignature;
         private IInstruction _body;
@@ -22,7 +22,7 @@ namespace BytecodeVirtualMachine.FluentInterface.Instructions
             return this;
         }
 
-        public void ToInstructions(List<byte> instructions)
+        public override void ToInstructions(List<byte> instructions)
         {
             _returnSignature.ToInstructions(instructions);
             _body.ToInstructions(instructions);

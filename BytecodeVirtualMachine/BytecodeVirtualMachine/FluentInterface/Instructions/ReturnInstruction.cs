@@ -2,9 +2,9 @@
 
 namespace BytecodeVirtualMachine.FluentInterface.Instructions
 {
-    public class ReturnInstruction : IInstruction
+    public class ReturnInstruction : InstructionBase
     {
-        public void ToInstructions(List<byte> instructions)
+        public override void ToInstructions(List<byte> instructions)
         {
             instructions.Add((byte)InstructionsEnum.Return);
         }

@@ -2,11 +2,11 @@
 
 namespace BytecodeVirtualMachine.FluentInterface.Instructions
 {
-    public class GetArrayInstruction : IInstruction
+    public class GetArrayInstruction : InstructionBase
     {
-        private LiteralInstruction _id;
+        private IInstruction _id;
         
-        public GetArrayInstruction Id(LiteralInstruction id)
+        public GetArrayInstruction Id(IInstruction id)
         {
             _id = id;
             return this;
@@ -18,7 +18,7 @@ namespace BytecodeVirtualMachine.FluentInterface.Instructions
             return this;
         }
 
-        public void ToInstructions(List<byte> instructions)
+        public override void ToInstructions(List<byte> instructions)
         {
             _id.ToInstructions(instructions);
             instructions.Add((byte)InstructionsEnum.GetArray);

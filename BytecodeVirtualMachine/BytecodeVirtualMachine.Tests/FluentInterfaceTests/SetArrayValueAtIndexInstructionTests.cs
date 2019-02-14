@@ -5,35 +5,43 @@ using System.Collections.Generic;
 namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
 {
     [TestClass]
-    public class MathInstructionTests
+    public class SetArrayValueAtIndexInstructionTests
     {
         private byte _val1;
         private byte _val2;
-        private InstructionsEnum _mathInstruction;
+        private byte _id;
+        private byte _index;
 
         private List<byte> _expected;
         
         [TestInitialize]
         public void Init()
         {
-            _val1 = 3;
-            _val2 = 5;
-
-            _mathInstruction = InstructionsEnum.Add;
-
+            _val1 = 1;
+            _val2 = 2;
+            _id = 3;
+            _index = 4;
+            
             _expected = new List<byte>();
 
             _expected.AddRange<byte>(
-                //set literal to 3 so we can confirm value later
+                //set literal for value
                 (byte)InstructionsEnum.Literal,
                 _val1,
 
-                //set literal to 5 so we can confirm value later
+                //set literal for value
                 (byte)InstructionsEnum.Literal,
                 _val2,
 
-                //add 3 + 5
-                (byte)_mathInstruction
+                //set literal for array id
+                (byte)InstructionsEnum.Literal,
+                _id,
+
+                //set literal for index
+                (byte)InstructionsEnum.Literal,
+                _index,
+
+                (byte)InstructionsEnum.SetArrayValueAtIndex
             );
         }
 
@@ -42,9 +50,11 @@ namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            List<byte> actual = new MathInstruction(_mathInstruction)
-                .Left(_val1)
-                .Right(_val2)
+            List<byte> actual = new SetArrayValueAtIndexInstruction()
+                .Value(_val1)
+                .Value(_val2)
+                .Id(_id)
+                .Index(_index)
                 .ToInstructions();
 
             TestHelper.AssertResultsEqual(_expected, actual);
@@ -55,9 +65,11 @@ namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
         {
             VirtualMachine vm = new VirtualMachine();
             
-            List<byte> actual = new MathInstruction(_mathInstruction)
-                .Left(new LiteralInstruction(_val1))
-                .Right(new LiteralInstruction(_val2))
+            List<byte> actual = new SetArrayValueAtIndexInstruction()
+                .Value(new LiteralInstruction(_val1))
+                .Value(new LiteralInstruction(_val2))
+                .Id(new LiteralInstruction(_id))
+                .Index(new LiteralInstruction(_index))
                 .ToInstructions();
 
             TestHelper.AssertResultsEqual(_expected, actual);

@@ -2,7 +2,7 @@
 
 namespace BytecodeVirtualMachine.FluentInterface.Instructions
 {
-    public class DefTypeInstruction : IInstruction
+    public class DefTypeInstruction : InstructionBase
     {
         private IInstruction _id;
         private IInstruction _numberOfFields;
@@ -31,7 +31,7 @@ namespace BytecodeVirtualMachine.FluentInterface.Instructions
             return this;
         }
 
-        public void ToInstructions(List<byte> instructions)
+        public override void ToInstructions(List<byte> instructions)
         {
             _id.ToInstructions(instructions);
             _numberOfFields.ToInstructions(instructions);

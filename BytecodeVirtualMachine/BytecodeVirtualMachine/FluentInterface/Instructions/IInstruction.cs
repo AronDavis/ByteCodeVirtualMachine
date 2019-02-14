@@ -2,8 +2,10 @@
 
 namespace BytecodeVirtualMachine.FluentInterface.Instructions
 {
-    public interface IInstruction
+    public interface IInstruction : IFluentInterface
     {
         void ToInstructions(List<byte> instructions);
+
+        List<byte> ToInstructions();
     }
 }

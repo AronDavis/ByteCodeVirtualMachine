@@ -2,15 +2,21 @@
 
 namespace BytecodeVirtualMachine.FluentInterface.Instructions
 {
-    public class InstructionAggregate: IInstruction
+    public class InstructionAggregate: InstructionBase
     {
         List<IInstruction> _instructions = new List<IInstruction>();
-        public void ToInstructions(List<byte> instructions)
+        public override void ToInstructions(List<byte> instructions)
         {
             foreach (var instruction in _instructions)
                 instruction.ToInstructions(instructions);
         }
 
+        public LiteralInstruction Literal(byte val)
+        {
+            LiteralInstruction instruction = new LiteralInstruction(val);
+            _instructions.Add(instruction);
+            return instruction;
+        }
         public MathInstruction Add()
         {
             MathInstruction instruction = new MathInstruction(InstructionsEnum.Add);

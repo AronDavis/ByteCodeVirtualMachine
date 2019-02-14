@@ -48,6 +48,16 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FluentInterfaceTests\InstructionAggregateTests.cs" />
+    <Compile Include="FluentInterfaceTests\LiteralInstructionTests.cs" />
+    <Compile Include="FluentInterfaceTests\GetArrayInstructionTests.cs" />
+    <Compile Include="FluentInterfaceTests\DefTypeInstructionTests.cs" />
+    <Compile Include="FluentInterfaceTests\DefFunctionInstructionTests.cs" />
+    <Compile Include="FluentInterfaceTests\DefArrayInstructionTests.cs" />
+    <Compile Include="FluentInterfaceTests\InstructionBaseTests.cs" />
+    <Compile Include="FluentInterfaceTests\SetArrayValueAtIndexInstructionTests.cs" />
+    <Compile Include="FluentInterfaceTests\ReturnSignatureInstructionTests.cs" />
+    <Compile Include="FluentInterfaceTests\ReturnInstructionTests.cs" />
     <Compile Include="FluentInterfaceTests\MathInstructionTests.cs" />
     <Compile Include="FunctionTests.cs" />
     <Compile Include="LogicalComparisonTests\EqualToTests.cs" />

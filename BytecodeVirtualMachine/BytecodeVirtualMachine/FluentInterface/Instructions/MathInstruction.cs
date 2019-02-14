@@ -2,7 +2,7 @@
 
 namespace BytecodeVirtualMachine.FluentInterface.Instructions
 {
-    public class MathInstruction : IInstruction
+    public class MathInstruction : InstructionBase
     {
         private InstructionsEnum _mathInstruction;
         public MathInstruction(InstructionsEnum mathInstruction)
@@ -36,7 +36,7 @@ namespace BytecodeVirtualMachine.FluentInterface.Instructions
             return this;
         }
 
-        public void ToInstructions(List<byte> instructions)
+        public override void ToInstructions(List<byte> instructions)
         {
             _left.ToInstructions(instructions);
             _right.ToInstructions(instructions);

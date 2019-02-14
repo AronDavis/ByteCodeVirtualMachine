@@ -2,7 +2,7 @@
 
 namespace BytecodeVirtualMachine.FluentInterface.Instructions
 {
-    public class DefArrayInstruction : IInstruction
+    public class DefArrayInstruction : InstructionBase
     {
         private IInstruction _type;
         private IInstruction _id;
@@ -44,7 +44,7 @@ namespace BytecodeVirtualMachine.FluentInterface.Instructions
             return this;
         }
 
-        public void ToInstructions(List<byte> instructions)
+        public override void ToInstructions(List<byte> instructions)
         {
             _type.ToInstructions(instructions);
             _id.ToInstructions(instructions);

@@ -2,7 +2,7 @@
 
 namespace BytecodeVirtualMachine.FluentInterface.Instructions
 {
-    public class SetArrayValueAtIndexInstruction : IInstruction
+    public class SetArrayValueAtIndexInstruction : InstructionBase
     {
         private List<IInstruction> _values = new List<IInstruction>();
         private IInstruction _id;
@@ -43,7 +43,7 @@ namespace BytecodeVirtualMachine.FluentInterface.Instructions
             return this;
         }
 
-        public void ToInstructions(List<byte> instructions)
+        public override void ToInstructions(List<byte> instructions)
         {
             foreach (var value in _values)
                 value.ToInstructions(instructions);

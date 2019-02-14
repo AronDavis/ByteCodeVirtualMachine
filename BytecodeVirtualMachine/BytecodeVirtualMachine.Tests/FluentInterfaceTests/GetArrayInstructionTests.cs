@@ -5,35 +5,26 @@ using System.Collections.Generic;
 namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
 {
     [TestClass]
-    public class MathInstructionTests
+    public class GetArrayInstructionTests
     {
-        private byte _val1;
-        private byte _val2;
-        private InstructionsEnum _mathInstruction;
+        private byte _id;
 
         private List<byte> _expected;
         
         [TestInitialize]
         public void Init()
         {
-            _val1 = 3;
-            _val2 = 5;
-
-            _mathInstruction = InstructionsEnum.Add;
+            _id = 1;
 
             _expected = new List<byte>();
 
             _expected.AddRange<byte>(
-                //set literal to 3 so we can confirm value later
+                //set literal for id
                 (byte)InstructionsEnum.Literal,
-                _val1,
+                _id,
 
-                //set literal to 5 so we can confirm value later
-                (byte)InstructionsEnum.Literal,
-                _val2,
-
-                //add 3 + 5
-                (byte)_mathInstruction
+                //define new type
+                (byte)InstructionsEnum.GetArray
             );
         }
 
@@ -42,9 +33,8 @@ namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            List<byte> actual = new MathInstruction(_mathInstruction)
-                .Left(_val1)
-                .Right(_val2)
+            List<byte> actual = new GetArrayInstruction()
+                .Id(_id)
                 .ToInstructions();
 
             TestHelper.AssertResultsEqual(_expected, actual);
@@ -54,10 +44,9 @@ namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
         public void TestExpressions()
         {
             VirtualMachine vm = new VirtualMachine();
-            
-            List<byte> actual = new MathInstruction(_mathInstruction)
-                .Left(new LiteralInstruction(_val1))
-                .Right(new LiteralInstruction(_val2))
+
+            List<byte> actual = new GetArrayInstruction()
+                .Id(new LiteralInstruction(_id))
                 .ToInstructions();
 
             TestHelper.AssertResultsEqual(_expected, actual);
