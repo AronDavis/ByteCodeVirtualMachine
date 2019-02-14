@@ -34,10 +34,12 @@ namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
             _expected.AddRange(new DefTypeInstruction().Id(_val).NumberOfFields(_val).ToInstructions());
 
             _expected.AddRange(new DefArrayInstruction().Id(_val).Length(_val).Type(_val).ToInstructions());
-
             _expected.AddRange(new SetArrayValueAtIndexInstruction().Id(_val).Index(_val).Value(_val).ToInstructions());
-
             _expected.AddRange(new GetArrayInstruction().Id(_val).ToInstructions());
+
+            _expected.AddRange(new DefVarInstruction().Id(_val).Type(_val).ToInstructions());
+            _expected.AddRange(new GetVarInstruction().Id(_val).ToInstructions());
+            _expected.AddRange(new SetVarInstruction().Id(_val).Value(_val).ToInstructions());
 
             _expected.AddRange(new CustomFunctionInstruction().Id(_val).ToInstructions());
 
@@ -107,6 +109,17 @@ namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
 
                     b.GetArray()
                     .Id(_val);
+
+                    b.DefVar()
+                    .Id(_val)
+                    .Type(_val);
+
+                    b.GetVar()
+                    .Id(_val);
+
+                    b.SetVar()
+                    .Id(_val)
+                    .Value(_val);
 
                     b.CustomFunction()
                     .Id(_val);

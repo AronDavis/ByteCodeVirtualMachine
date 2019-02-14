@@ -11,6 +11,13 @@ namespace BytecodeVirtualMachine.FluentInterface.Instructions
                 instruction.ToInstructions(instructions);
         }
 
+        private T _getInstruction<T>() where T : IInstruction, new()
+        {
+            T instruction = new T();
+            _instructions.Add(instruction);
+            return instruction;
+        }
+
         public LiteralInstruction Literal(byte val)
         {
             LiteralInstruction instruction = new LiteralInstruction(val);
@@ -69,53 +76,24 @@ namespace BytecodeVirtualMachine.FluentInterface.Instructions
             return _binaryOperator(InstructionsEnum.LessThan);
         }
 
-        public DefTypeInstruction DefType()
-        {
-            DefTypeInstruction instruction = new DefTypeInstruction();
-            _instructions.Add(instruction);
-            return instruction;
-        }
+        public DefTypeInstruction DefType() => _getInstruction<DefTypeInstruction>();
 
-        public ForInstruction For()
-        {
-            ForInstruction instruction = new ForInstruction();
-            _instructions.Add(instruction);
-            return instruction;
-        }
+        public ForInstruction For() => _getInstruction<ForInstruction>();
 
-        public DefArrayInstruction DefArray()
-        {
-            DefArrayInstruction instruction = new DefArrayInstruction();
-            _instructions.Add(instruction);
-            return instruction;
-        }
+        public DefArrayInstruction DefArray() => _getInstruction<DefArrayInstruction>();
 
-        public SetArrayValueAtIndexInstruction SetArrayValueAtIndex()
-        {
-            SetArrayValueAtIndexInstruction instruction = new SetArrayValueAtIndexInstruction();
-            _instructions.Add(instruction);
-            return instruction;
-        }
+        public SetArrayValueAtIndexInstruction SetArrayValueAtIndex() => _getInstruction<SetArrayValueAtIndexInstruction>();
 
-        public GetArrayInstruction GetArray()
-        {
-            GetArrayInstruction instruction = new GetArrayInstruction();
-            _instructions.Add(instruction);
-            return instruction;
-        }
+        public GetArrayInstruction GetArray() => _getInstruction<GetArrayInstruction>();
 
-        public CustomFunctionInstruction CustomFunction()
-        {
-            CustomFunctionInstruction instruction = new CustomFunctionInstruction();
-            _instructions.Add(instruction);
-            return instruction;
-        }
+        public DefVarInstruction DefVar() => _getInstruction<DefVarInstruction>();
 
-        public ReturnInstruction Return()
-        {
-            ReturnInstruction instruction = new ReturnInstruction();
-            _instructions.Add(instruction);
-            return instruction;
-        }
+        public GetVarInstruction GetVar() => _getInstruction<GetVarInstruction>();
+
+        public SetVarInstruction SetVar() => _getInstruction<SetVarInstruction>();
+
+        public CustomFunctionInstruction CustomFunction() => _getInstruction<CustomFunctionInstruction>();
+
+        public ReturnInstruction Return() => _getInstruction<ReturnInstruction>();
     }
 }

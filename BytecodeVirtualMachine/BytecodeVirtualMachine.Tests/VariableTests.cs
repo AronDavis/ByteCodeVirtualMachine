@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using BytecodeVirtualMachine.FluentInterface;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 
 namespace BytecodeVirtualMachine.Tests
 {
@@ -10,52 +12,31 @@ namespace BytecodeVirtualMachine.Tests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            byte[] data = new byte[]
-            {
-                #region defReturnSignature
-                //set an type_1 as the return type
-                (byte)InstructionsEnum.Literal, // array = no
-                0,
-                (byte)InstructionsEnum.Literal,
-                1,
-                (byte)InstructionsEnum.ReturnSignature,
-                #endregion
+            byte varId = 0;
 
-                #region defVariable
-                    //set literal to 1 for type_1
-                    (byte)InstructionsEnum.Literal,
-                    1,
-
-                    //set literal to 0 for var id
-                    (byte)InstructionsEnum.Literal,
-                    0,
-
+            List<byte> data = new InstructionsBuilder()
+                .Main()
+                .ReturnSignature(1)
+                .Body(b =>
+                {
                     //define var_0 of type_1
-                    (byte)InstructionsEnum.DefVar,
-                #endregion
-
-                #region setVariable
-                    //set literal to 1 so we set var field to 1
-                    (byte)InstructionsEnum.Literal,
-                    1,
-
-                    //set literal for id of var we'll be using (var_0)
-                    (byte)InstructionsEnum.Literal,
-                    0,
+                    b.DefVar()
+                        .Id(varId)
+                        .Type(1);
 
                     //set var_0 to = 1
-                    (byte)InstructionsEnum.SetVar,
-                #endregion
+                    b.SetVar()
+                        .Id(varId)
+                        .Value(1);
 
-                #region return
-                    //set literal to 0 for var_0
-                    (byte)InstructionsEnum.Literal,
-                    0,
-                    (byte)InstructionsEnum.GetVar,
-                    (byte)InstructionsEnum.Return
-                #endregion
-            };
-
+                    //get var_0
+                    b.GetVar()
+                        .Id(varId);
+                    
+                    b.Return();
+                })
+                .ToInstructions();
+            
             var results = vm.Interpret(data);
 
             Assert.AreEqual(1, results.Length);
