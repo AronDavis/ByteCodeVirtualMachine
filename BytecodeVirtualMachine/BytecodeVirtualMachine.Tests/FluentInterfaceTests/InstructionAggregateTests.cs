@@ -20,10 +20,16 @@ namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
 
             _expected.AddRange(new LiteralInstruction(_val).ToInstructions());
 
-            _expected.AddRange(new MathInstruction(InstructionsEnum.Add).Left(_val).Right(_val).ToInstructions());
-            _expected.AddRange(new MathInstruction(InstructionsEnum.Subtract).Left(_val).Right(_val).ToInstructions());
-            _expected.AddRange(new MathInstruction(InstructionsEnum.Multiply).Left(_val).Right(_val).ToInstructions());
-            _expected.AddRange(new MathInstruction(InstructionsEnum.Divide).Left(_val).Right(_val).ToInstructions());
+            _expected.AddRange(new BinaryOperatorInstruction(InstructionsEnum.Add).Left(_val).Right(_val).ToInstructions());
+            _expected.AddRange(new BinaryOperatorInstruction(InstructionsEnum.Subtract).Left(_val).Right(_val).ToInstructions());
+            _expected.AddRange(new BinaryOperatorInstruction(InstructionsEnum.Multiply).Left(_val).Right(_val).ToInstructions());
+            _expected.AddRange(new BinaryOperatorInstruction(InstructionsEnum.Divide).Left(_val).Right(_val).ToInstructions());
+
+            _expected.AddRange(new BinaryOperatorInstruction(InstructionsEnum.EqualTo).Left(_val).Right(_val).ToInstructions());
+            _expected.AddRange(new BinaryOperatorInstruction(InstructionsEnum.GreaterThanOrEqualTo).Left(_val).Right(_val).ToInstructions());
+            _expected.AddRange(new BinaryOperatorInstruction(InstructionsEnum.GreaterThan).Left(_val).Right(_val).ToInstructions());
+            _expected.AddRange(new BinaryOperatorInstruction(InstructionsEnum.LessThanOrEqualTo).Left(_val).Right(_val).ToInstructions());
+            _expected.AddRange(new BinaryOperatorInstruction(InstructionsEnum.LessThan).Left(_val).Right(_val).ToInstructions());
 
             _expected.AddRange(new DefTypeInstruction().Id(_val).NumberOfFields(_val).ToInstructions());
 
@@ -60,6 +66,26 @@ namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
                     .Right(_val);
 
                     b.Divide()
+                    .Left(_val)
+                    .Right(_val);
+
+                    b.EqualTo()
+                    .Left(_val)
+                    .Right(_val);
+
+                    b.GreaterThanOrEqualTo()
+                    .Left(_val)
+                    .Right(_val);
+
+                    b.GreaterThan()
+                    .Left(_val)
+                    .Right(_val);
+
+                    b.LessThanOrEqualTo()
+                    .Left(_val)
+                    .Right(_val);
+
+                    b.LessThan()
                     .Left(_val)
                     .Right(_val);
 

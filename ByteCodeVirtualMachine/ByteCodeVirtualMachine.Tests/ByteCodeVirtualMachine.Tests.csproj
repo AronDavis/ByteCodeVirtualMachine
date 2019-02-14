@@ -59,7 +59,7 @@
     <Compile Include="FluentInterfaceTests\SetArrayValueAtIndexInstructionTests.cs" />
     <Compile Include="FluentInterfaceTests\ReturnSignatureInstructionTests.cs" />
     <Compile Include="FluentInterfaceTests\ReturnInstructionTests.cs" />
-    <Compile Include="FluentInterfaceTests\MathInstructionTests.cs" />
+    <Compile Include="FluentInterfaceTests\BinaryOperatorInstructionTests.cs" />
     <Compile Include="FunctionTests.cs" />
     <Compile Include="LogicalComparisonTests\EqualToTests.cs" />
     <Compile Include="LogicalComparisonTests\GreaterThanOrEqualToTests.cs" />

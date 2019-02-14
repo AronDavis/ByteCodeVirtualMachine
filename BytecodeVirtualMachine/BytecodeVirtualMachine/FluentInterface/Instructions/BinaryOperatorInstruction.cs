@@ -2,35 +2,35 @@
 
 namespace BytecodeVirtualMachine.FluentInterface.Instructions
 {
-    public class MathInstruction : InstructionBase
+    public class BinaryOperatorInstruction : InstructionBase
     {
         private InstructionsEnum _mathInstruction;
-        public MathInstruction(InstructionsEnum mathInstruction)
+        public BinaryOperatorInstruction(InstructionsEnum mathInstruction)
         {
             _mathInstruction = mathInstruction;
         }
 
         private IInstruction _left;
         private IInstruction _right;
-        public MathInstruction Left(IInstruction left)
+        public BinaryOperatorInstruction Left(IInstruction left)
         {
             _left = left;
             return this;
         }
 
-        public MathInstruction Left(byte left)
+        public BinaryOperatorInstruction Left(byte left)
         {
             _left = new LiteralInstruction(left);
             return this;
         }
 
-        public MathInstruction Right(IInstruction right)
+        public BinaryOperatorInstruction Right(IInstruction right)
         {
             _right = right;
             return this;
         }
 
-        public MathInstruction Right(byte right)
+        public BinaryOperatorInstruction Right(byte right)
         {
             _right = new LiteralInstruction(right);
             return this;

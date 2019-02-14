@@ -5,11 +5,11 @@ using System.Collections.Generic;
 namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
 {
     [TestClass]
-    public class MathInstructionTests
+    public class BinaryOperatorInstructionTests
     {
         private byte _val1;
         private byte _val2;
-        private InstructionsEnum _mathInstruction;
+        private InstructionsEnum _binaryOperator;
 
         private List<byte> _expected;
         
@@ -19,7 +19,7 @@ namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
             _val1 = 3;
             _val2 = 5;
 
-            _mathInstruction = InstructionsEnum.Add;
+            _binaryOperator = InstructionsEnum.Add;
 
             _expected = new List<byte>();
 
@@ -33,7 +33,7 @@ namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
                 _val2,
 
                 //add 3 + 5
-                (byte)_mathInstruction
+                (byte)_binaryOperator
             );
         }
 
@@ -42,7 +42,7 @@ namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            List<byte> actual = new MathInstruction(_mathInstruction)
+            List<byte> actual = new BinaryOperatorInstruction(_binaryOperator)
                 .Left(_val1)
                 .Right(_val2)
                 .ToInstructions();
@@ -55,7 +55,7 @@ namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
         {
             VirtualMachine vm = new VirtualMachine();
             
-            List<byte> actual = new MathInstruction(_mathInstruction)
+            List<byte> actual = new BinaryOperatorInstruction(_binaryOperator)
                 .Left(new LiteralInstruction(_val1))
                 .Right(new LiteralInstruction(_val2))
                 .ToInstructions();
@@ -73,7 +73,7 @@ namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
             new LiteralInstruction(_val2)
                 .ToInstructions(actual);
 
-            new MathInstruction(_mathInstruction)
+            new BinaryOperatorInstruction(_binaryOperator)
                 .ToInstructions(actual);
 
             TestHelper.AssertResultsEqual(_expected, actual);

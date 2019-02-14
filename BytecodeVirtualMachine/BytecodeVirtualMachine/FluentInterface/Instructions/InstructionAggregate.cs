@@ -17,32 +17,56 @@ namespace BytecodeVirtualMachine.FluentInterface.Instructions
             _instructions.Add(instruction);
             return instruction;
         }
-        public MathInstruction Add()
+
+        private BinaryOperatorInstruction _binaryOperator(InstructionsEnum binaryOperator)
         {
-            MathInstruction instruction = new MathInstruction(InstructionsEnum.Add);
+            BinaryOperatorInstruction instruction = new BinaryOperatorInstruction(binaryOperator);
             _instructions.Add(instruction);
             return instruction;
         }
-
-        public MathInstruction Subtract()
+        public BinaryOperatorInstruction Add()
         {
-            MathInstruction instruction = new MathInstruction(InstructionsEnum.Subtract);
-            _instructions.Add(instruction);
-            return instruction;
+            return _binaryOperator(InstructionsEnum.Add);
         }
 
-        public MathInstruction Multiply()
+        public BinaryOperatorInstruction Subtract()
         {
-            MathInstruction instruction = new MathInstruction(InstructionsEnum.Multiply);
-            _instructions.Add(instruction);
-            return instruction;
+            return _binaryOperator(InstructionsEnum.Subtract);
         }
 
-        public MathInstruction Divide()
+        public BinaryOperatorInstruction Multiply()
         {
-            MathInstruction instruction = new MathInstruction(InstructionsEnum.Divide);
-            _instructions.Add(instruction);
-            return instruction;
+            return _binaryOperator(InstructionsEnum.Multiply);
+        }
+
+        public BinaryOperatorInstruction Divide()
+        {
+            return _binaryOperator(InstructionsEnum.Divide);
+        }
+
+        public BinaryOperatorInstruction EqualTo()
+        {
+            return _binaryOperator(InstructionsEnum.EqualTo);
+        }
+
+        public BinaryOperatorInstruction GreaterThanOrEqualTo()
+        {
+            return _binaryOperator(InstructionsEnum.GreaterThanOrEqualTo);
+        }
+
+        public BinaryOperatorInstruction GreaterThan()
+        {
+            return _binaryOperator(InstructionsEnum.GreaterThan);
+        }
+
+        public BinaryOperatorInstruction LessThanOrEqualTo()
+        {
+            return _binaryOperator(InstructionsEnum.LessThanOrEqualTo);
+        }
+
+        public BinaryOperatorInstruction LessThan()
+        {
+            return _binaryOperator(InstructionsEnum.LessThan);
         }
 
         public DefTypeInstruction DefType()

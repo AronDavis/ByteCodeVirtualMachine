@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using BytecodeVirtualMachine.FluentInterface;
+using BytecodeVirtualMachine.FluentInterface.Instructions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 
 namespace BytecodeVirtualMachine.Tests.LogicalComparisonTests
@@ -11,27 +13,18 @@ namespace BytecodeVirtualMachine.Tests.LogicalComparisonTests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            List<byte> data = new List<byte>();
-
-            //set return type to type_1
-            data.AddRange(TestHelper.GetReturnSignatureInstructions(1));
-
-            data.AddRange<byte>(
-                //set literal to 1 so left is 1
-                (byte)InstructionsEnum.Literal,
-                1,
-
-                //set literal to 2 so right is 2
-                (byte)InstructionsEnum.Literal,
-                2,
-
-                //compare 1 == 2
-                (byte)InstructionsEnum.EqualTo,
-
-                //return
-                (byte)InstructionsEnum.Return
-            );
-
+            List<byte> data = new InstructionsBuilder()
+                .Main()
+                .ReturnSignature(1)
+                .Body(b =>
+                {
+                    b.EqualTo()
+                        .Left(1)
+                        .Right(2);
+                    b.Return();
+                })
+                .ToInstructions();
+            
             var results = vm.Interpret(data);
 
             //confirm false
@@ -43,26 +36,17 @@ namespace BytecodeVirtualMachine.Tests.LogicalComparisonTests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            List<byte> data = new List<byte>();
-
-            //set return type to type_1
-            data.AddRange(TestHelper.GetReturnSignatureInstructions(1));
-
-            data.AddRange<byte>(
-                //set literal to 1 so left is 1
-                (byte)InstructionsEnum.Literal,
-                1,
-
-                //set literal to 1 so right is 1
-                (byte)InstructionsEnum.Literal,
-                1,
-
-                //compare 1 == 1
-                (byte)InstructionsEnum.EqualTo,
-
-                //return
-                (byte)InstructionsEnum.Return
-            );
+            List<byte> data = new InstructionsBuilder()
+                .Main()
+                .ReturnSignature(1)
+                .Body(b =>
+                {
+                    b.EqualTo()
+                        .Left(1)
+                        .Right(1);
+                    b.Return();
+                })
+                .ToInstructions();
 
             var results = vm.Interpret(data);
 
@@ -75,26 +59,17 @@ namespace BytecodeVirtualMachine.Tests.LogicalComparisonTests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            List<byte> data = new List<byte>();
-
-            //set return type to type_1
-            data.AddRange(TestHelper.GetReturnSignatureInstructions(1));
-
-            data.AddRange<byte>(
-                //set literal to 2 so left is 2
-                (byte)InstructionsEnum.Literal,
-                2,
-
-                //set literal to 1 so right is 1
-                (byte)InstructionsEnum.Literal,
-                1,
-
-                //compare 2 == 1
-                (byte)InstructionsEnum.EqualTo,
-
-                //return
-                (byte)InstructionsEnum.Return
-            );
+            List<byte> data = new InstructionsBuilder()
+                .Main()
+                .ReturnSignature(1)
+                .Body(b =>
+                {
+                    b.EqualTo()
+                        .Left(2)
+                        .Right(1);
+                    b.Return();
+                })
+                .ToInstructions();
 
             var results = vm.Interpret(data);
 
