@@ -6,7 +6,7 @@ namespace BytecodeVirtualMachine.FluentInterface.Instructions
     public class DefFunctionInstruction : InstructionBase
     {
         private ReturnSignatureInstruction _returnSignature;
-        private IInstruction _body;
+        private InstructionAggregate _body;
 
         public DefFunctionInstruction ReturnSignature(byte typeId, bool isArray = false)
         {

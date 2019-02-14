@@ -52,6 +52,13 @@ namespace BytecodeVirtualMachine.FluentInterface.Instructions
             return instruction;
         }
 
+        public ForInstruction For()
+        {
+            ForInstruction instruction = new ForInstruction();
+            _instructions.Add(instruction);
+            return instruction;
+        }
+
         public DefArrayInstruction DefArray()
         {
             DefArrayInstruction instruction = new DefArrayInstruction();

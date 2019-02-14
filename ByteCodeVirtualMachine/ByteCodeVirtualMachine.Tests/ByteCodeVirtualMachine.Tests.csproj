@@ -48,6 +48,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FluentInterfaceTests\ForInstructionTests.cs" />
     <Compile Include="FluentInterfaceTests\InstructionAggregateTests.cs" />
     <Compile Include="FluentInterfaceTests\LiteralInstructionTests.cs" />
     <Compile Include="FluentInterfaceTests\GetArrayInstructionTests.cs" />

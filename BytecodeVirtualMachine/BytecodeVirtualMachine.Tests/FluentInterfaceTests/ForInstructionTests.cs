@@ -5,35 +5,34 @@ using System.Collections.Generic;
 namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
 {
     [TestClass]
-    public class MathInstructionTests
+    public class ForInstructionTests
     {
-        private byte _val1;
-        private byte _val2;
-        private InstructionsEnum _mathInstruction;
+        private byte _numberOfLoops;
+        private byte _val;
 
         private List<byte> _expected;
         
         [TestInitialize]
         public void Init()
         {
-            _val1 = 3;
-            _val2 = 5;
-
-            _mathInstruction = InstructionsEnum.Add;
+            _numberOfLoops = 3;
+            _val = 1;
 
             _expected = new List<byte>();
 
             _expected.AddRange<byte>(
-                //set literal to 3 so we can confirm value later
+                //set literal for number of loops 
                 (byte)InstructionsEnum.Literal,
-                _val1,
+                _numberOfLoops,
 
-                //set literal to 5 so we can confirm value later
+                (byte)InstructionsEnum.For,
+
+                //set literal for body contents
                 (byte)InstructionsEnum.Literal,
-                _val2,
+                _val,
 
-                //add 3 + 5
-                (byte)_mathInstruction
+                //end for
+                (byte)InstructionsEnum.EndFor
             );
         }
 
@@ -42,11 +41,14 @@ namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            List<byte> actual = new MathInstruction(_mathInstruction)
-                .Left(_val1)
-                .Right(_val2)
+            List<byte> actual = new ForInstruction()
+                .NumberOfLoops(_numberOfLoops)
+                .Body(b =>
+                {
+                    b.Literal(_val);
+                })
                 .ToInstructions();
-
+            
             TestHelper.AssertResultsEqual(_expected, actual);
         }
 
@@ -54,26 +56,30 @@ namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
         public void TestExpressions()
         {
             VirtualMachine vm = new VirtualMachine();
-            
-            List<byte> actual = new MathInstruction(_mathInstruction)
-                .Left(new LiteralInstruction(_val1))
-                .Right(new LiteralInstruction(_val2))
+
+            List<byte> actual = new ForInstruction()
+                .NumberOfLoops(new LiteralInstruction(_numberOfLoops))
+                .Body(b =>
+                {
+                    b.Literal(_val);
+                })
                 .ToInstructions();
 
             TestHelper.AssertResultsEqual(_expected, actual);
         }
 
         [TestMethod]
-        public void TestNoLeftOrRight()
+        public void TestEmptyNumberOfLoops()
         {
             VirtualMachine vm = new VirtualMachine();
 
-            List<byte> actual = new LiteralInstruction(_val1).ToInstructions();
+            List<byte> actual = new LiteralInstruction(_numberOfLoops).ToInstructions();
 
-            new LiteralInstruction(_val2)
-                .ToInstructions(actual);
-
-            new MathInstruction(_mathInstruction)
+            new ForInstruction()
+                .Body(b =>
+                {
+                    b.Literal(_val);
+                })
                 .ToInstructions(actual);
 
             TestHelper.AssertResultsEqual(_expected, actual);

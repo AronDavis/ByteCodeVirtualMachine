@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using BytecodeVirtualMachine.FluentInterface;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 
 namespace BytecodeVirtualMachine.Tests
@@ -11,34 +12,26 @@ namespace BytecodeVirtualMachine.Tests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            List<byte> data = new List<byte>();
+            List<byte> data = new InstructionsBuilder()
+                .Main()
+                .ReturnSignature(1)
+                .Body(b =>
+                {
+                    //set literal to 0 so we have a start value to add
+                    b.Literal(0);
 
-            //set return type to type_1
-            data.AddRange(TestHelper.GetReturnSignatureInstructions(1));
+                    b.For()
+                        .NumberOfLoops(5) //loop 5 times
+                        .Body(fb =>
+                        {
+                            //add 2 to the previous number
+                            fb.Add()
+                                .Right(2);
+                        });
 
-            data.AddRange<byte>(
-                //set literal to 0 so we have a start value to add
-                (byte)InstructionsEnum.Literal,
-                0,
-
-                //set literal to 5 so we loop 5 times
-                (byte)InstructionsEnum.Literal,
-                5,
-                (byte)InstructionsEnum.For,
-
-                //set literal to 2 so we can add
-                (byte)InstructionsEnum.Literal,
-                2,
-
-                //add 0 + 2 or 2 + 2
-                (byte)InstructionsEnum.Add,
-
-                //end for
-                (byte)InstructionsEnum.EndFor,
-
-                //return
-                (byte)InstructionsEnum.Return
-            );
+                    b.Return();
+                })
+                .ToInstructions();
             
             //confirm that five adds happened: 0 + 2 + 2 + 2 + 2 + 2
             var results = vm.Interpret(data);
@@ -50,49 +43,35 @@ namespace BytecodeVirtualMachine.Tests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            List<byte> data = new List<byte>();
+            List<byte> data = new InstructionsBuilder()
+                .Main()
+                .ReturnSignature(1)
+                .Body(b =>
+                {
+                    //set literal to 0 so we have a start value to add
+                    b.Literal(0);
 
-            //set return type to type_1
-            data.AddRange(TestHelper.GetReturnSignatureInstructions(1));
+                    b.For()
+                        .NumberOfLoops(2) //loop 2 times
+                        .Body(outterLoop =>
+                        {
+                            //add 5 to the previous number
+                            outterLoop.Add()
+                                .Right(5);
 
-            data.AddRange<byte>(
-                //set literal to 0 so we have a start value to add
-                (byte)InstructionsEnum.Literal,
-                0,
+                            outterLoop.For()
+                                .NumberOfLoops(10) //loop 10 times
+                                .Body(innerLoop =>
+                                {
+                                    //add 3 to the previous number
+                                    innerLoop.Add()
+                                        .Right(3);
+                                });
+                        });
 
-                //set literal to 2 so we loop 2 times
-                (byte)InstructionsEnum.Literal,
-                2,
-                (byte)InstructionsEnum.For,
-
-                //set literal to 5 so we can add
-                (byte)InstructionsEnum.Literal,
-                5,
-
-                //add
-                (byte)InstructionsEnum.Add,
-
-                //set literal to 10 so we loop 10 times
-                (byte)InstructionsEnum.Literal,
-                10,
-                (byte)InstructionsEnum.For,
-
-                //set literal to 3 so we can add
-                (byte)InstructionsEnum.Literal,
-                3,
-
-                //add
-                (byte)InstructionsEnum.Add,
-
-                //end interal for
-                (byte)InstructionsEnum.EndFor,
-
-                //end external for
-                (byte)InstructionsEnum.EndFor,
-
-                //return
-                (byte)InstructionsEnum.Return
-            );
+                    b.Return();
+                })
+                .ToInstructions();
 
             //confirm [(5) + (30)] + [(5) + (30)]
             var results = vm.Interpret(data);

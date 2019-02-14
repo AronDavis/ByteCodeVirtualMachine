@@ -38,8 +38,8 @@ namespace BytecodeVirtualMachine.FluentInterface.Instructions
 
         public override void ToInstructions(List<byte> instructions)
         {
-            _left.ToInstructions(instructions);
-            _right.ToInstructions(instructions);
+            _left?.ToInstructions(instructions);
+            _right?.ToInstructions(instructions);
             instructions.Add((byte)_mathInstruction);
         }
     }
