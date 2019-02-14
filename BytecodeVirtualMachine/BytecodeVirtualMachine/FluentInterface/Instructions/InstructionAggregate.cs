@@ -104,6 +104,13 @@ namespace BytecodeVirtualMachine.FluentInterface.Instructions
             return instruction;
         }
 
+        public CustomFunctionInstruction CustomFunction()
+        {
+            CustomFunctionInstruction instruction = new CustomFunctionInstruction();
+            _instructions.Add(instruction);
+            return instruction;
+        }
+
         public ReturnInstruction Return()
         {
             ReturnInstruction instruction = new ReturnInstruction();

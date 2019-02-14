@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using BytecodeVirtualMachine.FluentInterface;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 
@@ -23,27 +24,21 @@ namespace BytecodeVirtualMachine.Tests
                 _customFunction1
             };
 
-            List<byte> data = new List<byte>();
+            List<byte> data = new InstructionsBuilder()
+                .Main()
+                .ReturnSignature(1)
+                .Body(b =>
+                {
+                    //set literal to 1 so we can use it in customFunction_0
+                    b.Literal(1);
 
-            //set return type to type_1
-            data.AddRange(TestHelper.GetReturnSignatureInstructions(1));
-
-            data.AddRange<byte>(
-                //set literal to 1 so we can use it in customFunction_0
-                (byte)InstructionsEnum.Literal,
-                1,
-
-                //set literal to 0 for customFunction_0
-                (byte)InstructionsEnum.Literal,
-                0,
-
-                //use custom function
-                (byte)InstructionsEnum.CustomFunction,
-
-                //return
-                (byte)InstructionsEnum.Return
-            );
-
+                    b.CustomFunction()
+                        .Id(0);
+                    
+                    b.Return();
+                })
+                .ToInstructions();
+            
             var results = vm.Interpret(data);
 
             //confirm 1 + 2

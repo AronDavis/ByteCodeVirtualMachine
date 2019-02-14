@@ -39,6 +39,8 @@ namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
 
             _expected.AddRange(new GetArrayInstruction().Id(_val).ToInstructions());
 
+            _expected.AddRange(new CustomFunctionInstruction().Id(_val).ToInstructions());
+
             _expected.AddRange(new ReturnInstruction().ToInstructions());
         }
 
@@ -104,6 +106,9 @@ namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
                     .Value(_val);
 
                     b.GetArray()
+                    .Id(_val);
+
+                    b.CustomFunction()
                     .Id(_val);
 
                     b.Return();
