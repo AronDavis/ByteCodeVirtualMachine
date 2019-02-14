@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using BytecodeVirtualMachine.FluentInterface;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 
 namespace BytecodeVirtualMachine.Tests
@@ -11,38 +12,25 @@ namespace BytecodeVirtualMachine.Tests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            List<byte> data = new List<byte>();
-
-            //set return type to type_1
-            data.AddRange(TestHelper.GetReturnSignatureInstructions(1));
-
-            data.AddRange<byte>(
-                //set literal to 3 so we can confirm value later
-                (byte)InstructionsEnum.Literal,
-                3,
-
-                //set literal to 1 so the if results in true
-                (byte)InstructionsEnum.Literal,
-                1,
-                (byte)InstructionsEnum.If,
-
-                //set literal to 7 so we can confirm value later
-                (byte)InstructionsEnum.Literal,
-                7,
-
-                //end if
-                (byte)InstructionsEnum.EndIf,
-
-                //add 3 + 7
-                (byte)InstructionsEnum.Add,
-
-                //return
-                (byte)InstructionsEnum.Return
-            );
-
-            //confirm 3 + 7
+            List<byte> data = new InstructionsBuilder()
+                .Main()
+                .ReturnSignature(1)
+                .Body(b =>
+                {
+                    b.If()
+                        .Condition(true)
+                        .Body(ib =>
+                        {
+                            //return 7
+                            ib.Literal(7);
+                            ib.Return();
+                        });
+                })
+                .ToInstructions();
+            
+            //confirm 7
             var results = vm.Interpret(data);
-            Assert.AreEqual(10, results[0]);
+            Assert.AreEqual(7, results[0]);
         }
 
         [TestMethod]
@@ -50,41 +38,29 @@ namespace BytecodeVirtualMachine.Tests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            List<byte> data = new List<byte>();
+            List<byte> data = new InstructionsBuilder()
+                .Main()
+                .ReturnSignature(1)
+                .Body(b =>
+                {
+                    b.If()
+                        .Condition(false)
+                        .Body(ib =>
+                        {
+                            //return 7
+                            ib.Literal(7);
+                            ib.Return();
+                        });
 
-            //set return type to type_1
-            data.AddRange(TestHelper.GetReturnSignatureInstructions(1));
+                    //return 3
+                    b.Literal(3);
+                    b.Return();
+                })
+                .ToInstructions();
 
-            data.AddRange<byte>(
-                //set literal to 3 so we can confirm later
-                (byte)InstructionsEnum.Literal,
-                3,
-
-                //set literal to 2 so we can confirm later
-                (byte)InstructionsEnum.Literal,
-                2,
-
-                //set literal to 0 so the if results in false
-                (byte)InstructionsEnum.Literal,
-                0,
-                (byte)InstructionsEnum.If,
-
-                //attempt to set literal to 7, but shouldn't happen because if statement resulted in false
-                (byte)InstructionsEnum.Literal,
-                7,
-
-                (byte)InstructionsEnum.EndIf,
-
-                //add 3 + 2
-                (byte)InstructionsEnum.Add,
-
-                //return
-                (byte)InstructionsEnum.Return
-            );
-
-            //confirm that 3, not 7, is on top of the stack
+            //confirm 3
             var results = vm.Interpret(data);
-            Assert.AreEqual(5, results[0]);
+            Assert.AreEqual(3, results[0]);
         }
 
         [TestMethod]
@@ -92,43 +68,30 @@ namespace BytecodeVirtualMachine.Tests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            List<byte> data = new List<byte>();
+            List<byte> data = new InstructionsBuilder()
+                .Main()
+                .ReturnSignature(1)
+                .Body(b =>
+                {
+                    b.If()
+                        .Condition(true)
+                        .Body(outterIf =>
+                        {
+                            outterIf.If()
+                                .Condition(true)
+                                .Body(innerIf =>
+                                {
+                                    //return 7
+                                    innerIf.Literal(7);
+                                    innerIf.Return();
+                                });
+                        });
+                })
+                .ToInstructions();
 
-            //set return type to type_1
-            data.AddRange(TestHelper.GetReturnSignatureInstructions(1));
-
-            data.AddRange<byte>(
-                //set literal to 3 so we can confirm later
-                (byte)InstructionsEnum.Literal,
-                3,
-
-                //set literal to 1 so the if results in true
-                (byte)InstructionsEnum.Literal,
-                1,
-                (byte)InstructionsEnum.If,
-
-                //set literal to 1 so the second if results in true
-                (byte)InstructionsEnum.Literal,
-                1,
-                (byte)InstructionsEnum.If,
-
-                //set literal to 7 so we can test that it stays at the top of the stack
-                (byte)InstructionsEnum.Literal,
-                7,
-
-                //end both ifs
-                (byte)InstructionsEnum.EndIf,
-                (byte)InstructionsEnum.EndIf,
-
-                (byte)InstructionsEnum.Add,
-
-                //return
-                (byte)InstructionsEnum.Return
-            );
-
-            //confirm that 7 is on top of the stack
+            //confirm 7
             var results = vm.Interpret(data);
-            Assert.AreEqual(10, results[0]);
+            Assert.AreEqual(7, results[0]);
         }
 
         [TestMethod]
@@ -136,44 +99,34 @@ namespace BytecodeVirtualMachine.Tests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            List<byte> data = new List<byte>();
+            List<byte> data = new InstructionsBuilder()
+                .Main()
+                .ReturnSignature(1)
+                .Body(b =>
+                {
+                    b.If()
+                        .Condition(false)
+                        .Body(outterIf =>
+                        {
+                            outterIf.If()
+                                .Condition(false)
+                                .Body(innerIf =>
+                                {
+                                    //return 7
+                                    innerIf.Literal(7);
+                                    innerIf.Return();
+                                });
+                        });
 
-            //set return type to type_1
-            data.AddRange(TestHelper.GetReturnSignatureInstructions(1));
+                    //return 3
+                    b.Literal(3);
+                    b.Return();
+                })
+                .ToInstructions();
 
-            data.AddRange<byte>(
-                //set literal to 3 so we can confirm later
-                (byte)InstructionsEnum.Literal,
-                3,
-
-                //set literal to 2 so we can confirm later
-                (byte)InstructionsEnum.Literal,
-                2,
-
-                (byte)InstructionsEnum.Literal,
-                0,
-                (byte)InstructionsEnum.If,
-
-                //set literal to 0 so the if results in false
-                (byte)InstructionsEnum.Literal,
-                0,
-                (byte)InstructionsEnum.If,
-
-                (byte)InstructionsEnum.Literal,
-                7,
-
-                (byte)InstructionsEnum.EndIf,
-                (byte)InstructionsEnum.EndIf,
-
-                //add 3 + 2
-                (byte)InstructionsEnum.Add,
-
-                //return
-                (byte)InstructionsEnum.Return
-            );
-            
+            //confirm 3
             var results = vm.Interpret(data);
-            Assert.AreEqual(5, results[0]);
+            Assert.AreEqual(3, results[0]);
         }
 
         [TestMethod]
@@ -181,50 +134,36 @@ namespace BytecodeVirtualMachine.Tests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            List<byte> data = new List<byte>();
+            List<byte> data = new InstructionsBuilder()
+                .Main()
+                .ReturnSignature(1)
+                .Body(b =>
+                {
+                    b.If()
+                        .Condition(true)
+                        .Body(outterIf =>
+                        {
+                            outterIf.If()
+                                .Condition(false)
+                                .Body(innerIf =>
+                                {
+                                    //return 7
+                                    innerIf.Literal(7);
+                                    innerIf.Return();
+                                });
 
-            //set return type to type_1
-            data.AddRange(TestHelper.GetReturnSignatureInstructions(1));
+                            //return 3
+                            outterIf.Literal(3);
+                            outterIf.Return();
+                        });
 
-            data.AddRange<byte>(
-                //set literal to 1 so the if results in true
-                (byte)InstructionsEnum.Literal,
-                1,
-                (byte)InstructionsEnum.If,
+                    
+                })
+                .ToInstructions();
 
-                //set literal to 3 so we can check the value later
-                (byte)InstructionsEnum.Literal,
-                3,
-
-                //set literal to 0 so the if results in false
-                (byte)InstructionsEnum.Literal,
-                0,
-                (byte)InstructionsEnum.If,
-
-                //attempt to set literal to 7 so we can confirm it doesn't happen
-                (byte)InstructionsEnum.Literal,
-                7,
-
-                //end if
-                (byte)InstructionsEnum.EndIf,
-
-                //set literal to 5 so we can confirm instructions happen before and after 2nd if
-                (byte)InstructionsEnum.Literal,
-                5,
-
-                //add 3 and 5 to confirm
-                (byte)InstructionsEnum.Add,
-
-                //end if
-                (byte)InstructionsEnum.EndIf,
-
-                //return
-                (byte)InstructionsEnum.Return
-            );
-
-            //confirm 3 + 5
+            //confirm 3
             var results = vm.Interpret(data);
-            Assert.AreEqual(8, results[0]);
+            Assert.AreEqual(3, results[0]);
         }
 
         [TestMethod]
@@ -232,57 +171,34 @@ namespace BytecodeVirtualMachine.Tests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            List<byte> data = new List<byte>();
+            List<byte> data = new InstructionsBuilder()
+                .Main()
+                .ReturnSignature(1)
+                .Body(b =>
+                {
+                    b.If()
+                        .Condition(false)
+                        .Body(outterIf =>
+                        {
+                            outterIf.If()
+                                .Condition(true)
+                                .Body(innerIf =>
+                                {
+                                    //return 7
+                                    innerIf.Literal(7);
+                                    innerIf.Return();
+                                });
+                        });
 
-            //set return type to type_1
-            data.AddRange(TestHelper.GetReturnSignatureInstructions(1));
+                    //return 3
+                    b.Literal(3);
+                    b.Return();
+                })
+                .ToInstructions();
 
-            data.AddRange<byte>(
-                //set literal to 2 so we can confirm later
-                (byte)InstructionsEnum.Literal,
-                2,
-
-                //set literal to 0 so the if results in false
-                (byte)InstructionsEnum.Literal,
-                0,
-                (byte)InstructionsEnum.If,
-
-                //attempt to set literal to 13, but won't because false
-                (byte)InstructionsEnum.Literal,
-                13,
-
-                //set literal to 1 so the if results in true (but skipped because nested in false)
-                (byte)InstructionsEnum.Literal,
-                1,
-                (byte)InstructionsEnum.If,
-
-                //attempt to set literal to 7, but won't because false
-                (byte)InstructionsEnum.Literal,
-                7,
-
-                //end inside if
-                (byte)InstructionsEnum.EndIf,
-
-                //attempt to set literal to 19, but won't because false
-                (byte)InstructionsEnum.Literal,
-                19,
-
-                (byte)InstructionsEnum.EndIf,
-
-                //set literal to 3 so we can confirm later
-                (byte)InstructionsEnum.Literal,
-                3,
-
-                //add 2 + 3
-                (byte)InstructionsEnum.Add,
-
-                //return
-                (byte)InstructionsEnum.Return
-            );
-
-            //confirm 2 + 3
+            //confirm 3
             var results = vm.Interpret(data);
-            Assert.AreEqual(5, results[0]);
+            Assert.AreEqual(3, results[0]);
         }
     }
 }

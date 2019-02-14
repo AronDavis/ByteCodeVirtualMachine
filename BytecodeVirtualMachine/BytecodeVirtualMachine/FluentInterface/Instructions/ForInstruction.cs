@@ -32,7 +32,7 @@ namespace BytecodeVirtualMachine.FluentInterface.Instructions
         {
             _numberOfLoops?.ToInstructions(instructions);
             instructions.Add((byte)InstructionsEnum.For);
-            _body.ToInstructions(instructions);
+            _body?.ToInstructions(instructions);
             instructions.Add((byte)InstructionsEnum.EndFor);
         }
     }

@@ -161,7 +161,9 @@ namespace BytecodeVirtualMachine
         public byte[] Interpret(IList<byte> bytes) //TODO: should take a stack?
         {
             BytecodeFunction function = new BytecodeFunction(bytes);
-            return _interpretFunction(function);
+            _interpretFunction(function);
+
+            return _interpretFunction(_functions[0]);
         }
 
         private void _literal(List<byte> bytes, ref int i)
@@ -486,6 +488,8 @@ namespace BytecodeVirtualMachine
 
             BytecodeFunction function = new BytecodeFunction();
 
+            byte functionCount = 1;
+
             bool shouldEscapeWhileLoop = false;
             while (i < bytes.Count)
             {
@@ -496,8 +500,17 @@ namespace BytecodeVirtualMachine
                 //skip all instructions until we hit end function (still shift i for literals though)
                 switch (instruction)
                 {
+                    case InstructionsEnum.DefFunction:
+                        functionCount++;
+                        //TODO: consider order and things
+                        function.Instructions.Add(value);
+                        break;
                     case InstructionsEnum.EndDefFunction:
-                        shouldEscapeWhileLoop = true;
+                        functionCount--;
+                        if (functionCount == 0)
+                            shouldEscapeWhileLoop = true;
+                        else
+                            function.Instructions.Add(value);
                         break;
                     case InstructionsEnum.Literal:
                         //TODO: consider order and things
@@ -529,7 +542,7 @@ namespace BytecodeVirtualMachine
 
             Console.WriteLine($"Running function_{id}");
 
-            byte[] results = Interpret(function.Instructions);
+            byte[] results = _interpretFunction(function);
 
             if (results == null || results.Length == 0)
                 return;
@@ -570,7 +583,7 @@ namespace BytecodeVirtualMachine
                 byte arrayLength = Pop();
                 byte numFields = _types[function.ReturnType];
 
-                Console.Write($"Returning a type_{function.ReturnType}[]");
+                Console.WriteLine($"Returning a type_{function.ReturnType}[]");
 
                 returnBytes = new byte[arrayLength * numFields];
 
@@ -583,7 +596,7 @@ namespace BytecodeVirtualMachine
                 return returnBytes;
             }
 
-            Console.Write($"Returning a type_{function.ReturnType}");
+            Console.WriteLine($"Returning a type_{function.ReturnType}");
 
             returnBytes = new byte[function.ReturnType];
 

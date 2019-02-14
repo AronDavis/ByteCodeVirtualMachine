@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using BytecodeVirtualMachine.FluentInterface;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 
 namespace BytecodeVirtualMachine.Tests
@@ -11,76 +12,52 @@ namespace BytecodeVirtualMachine.Tests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            List<byte> data = new List<byte>();
+            byte varId = 0;
+            byte functionId = 1;
 
-            //set return type to type_1
-            data.AddRange(TestHelper.GetReturnSignatureInstructions(1));
+            List<byte> data = new InstructionsBuilder()
+                .Main()
+                .ReturnSignature(1)
+                .Body(b =>
+                {
+                    //define var_0 of type_1
+                    b.DefVar()
+                        .Id(varId)
+                        .Type(1);
 
-            //define var_0
-            data.AddRange<byte>(
-                //set literal to 1 for type_1
-                (byte)InstructionsEnum.Literal,
-                1,
+                    b.DefFunction()
+                        .Id(functionId)
+                        .Body(fb =>
+                        {
+                            //get var
+                            fb.GetVar()
+                                .Id(varId);
 
-                //set literal to 0 for var id
-                (byte)InstructionsEnum.Literal,
-                0,
+                            //add 1
+                            fb.Add()
+                                .Right(1);
 
-                //define var_0 of type_1
-                (byte)InstructionsEnum.DefVar
-            );
+                            //save var_0
+                            fb.SetVar()
+                                .Id(varId);
+                        });
 
-            //function definition
-            data.AddRange<byte>(
-                //set literal to 0 for function_0
-                (byte)InstructionsEnum.Literal,
-                0,
-                (byte)InstructionsEnum.DefFunction,
+                    //run function_1 three times
+                    b.For()
+                        .NumberOfLoops(3)
+                        .Body(fb =>
+                        {
+                            fb.Function()
+                                .Id(functionId);
+                        });
 
-                //get var_0
-                (byte)InstructionsEnum.Literal,
-                0,
-                (byte)InstructionsEnum.GetVar,
+                    //return var_0
+                    b.GetVar()
+                        .Id(varId);
 
-                //set literal to 1 so we can add 1
-                (byte)InstructionsEnum.Literal,
-                1,
-
-                //add 1 to var_0
-                (byte)InstructionsEnum.Add,
-
-                //literal for id of var we'll be setting (var_0)
-                (byte)InstructionsEnum.Literal,
-                0,
-
-                //var_0++
-                (byte)InstructionsEnum.SetVar,
-
-                //end function definition
-                (byte)InstructionsEnum.EndDefFunction
-            );
-
-            for(int i = 0; i < 3; i++)
-            {
-                //run function_0 3 times
-                data.AddRange<byte>(
-                    //set literal to 0 for function_0
-                    (byte)InstructionsEnum.Literal,
-                    0,
-                    (byte)InstructionsEnum.Function
-                );
-            }
-
-            //return var_0
-            data.AddRange<byte>(
-                //get var_0
-                (byte)InstructionsEnum.Literal,
-                0,
-                (byte)InstructionsEnum.GetVar,
-
-                //return
-                (byte)InstructionsEnum.Return
-            );
+                    b.Return();
+                })
+                .ToInstructions();
 
             var results = vm.Interpret(data);
 
@@ -93,57 +70,39 @@ namespace BytecodeVirtualMachine.Tests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            List<byte> data = new List<byte>();
+            byte functionId = 1;
 
-            //set return type to type_1
-            data.AddRange(TestHelper.GetReturnSignatureInstructions(1));
+            List<byte> data = new InstructionsBuilder()
+                .Main()
+                .ReturnSignature(1)
+                .Body(b =>
+                {
+                    b.DefFunction()
+                        .Id(functionId)
+                        .ReturnSignature(1)
+                        .Body(fb =>
+                        {
+                            fb.Add()
+                                .Right(1);
 
-            //start function definition
-            data.AddRange<byte>(
-                //set literal to 0 for function_0
-                (byte)InstructionsEnum.Literal,
-                0,
-                (byte)InstructionsEnum.DefFunction
-            );
+                            fb.Return();
+                        });
 
-            //set function return type to type_1
-            data.AddRange(TestHelper.GetReturnSignatureInstructions(1));
+                    //set literal to 0 as a starting point for addition
+                    b.Literal(0);
 
-            //finish function definition
-            data.AddRange<byte>(
-                //set literal to 1 so we can add 1
-                (byte)InstructionsEnum.Literal,
-                1,
-
-                //add 1
-                (byte)InstructionsEnum.Add,
-                
-                //return
-                (byte)InstructionsEnum.Return,
-
-                //end function definition
-                (byte)InstructionsEnum.EndDefFunction
-            );
-
-            data.AddRange<byte>(
-                //set literal to 0 as a starting point for addition
-                (byte)InstructionsEnum.Literal,
-                0
-            );
-
-            for (int i = 0; i < 3; i++)
-            {
-                //run function_0 3 times
-                data.AddRange<byte>(
-                    //set literal to 0 for function_0
-                    (byte)InstructionsEnum.Literal,
-                    0,
-                    (byte)InstructionsEnum.Function
-                );
-            }
-
-            //return
-            data.Add((byte)InstructionsEnum.Return);
+                    //run function_1 three times
+                    b.For()
+                        .NumberOfLoops(3)
+                        .Body(fb =>
+                        {
+                            fb.Function()
+                                .Id(functionId);
+                        });
+                    
+                    b.Return();
+                })
+                .ToInstructions();
 
             var results = vm.Interpret(data);
 

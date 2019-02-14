@@ -76,6 +76,8 @@ namespace BytecodeVirtualMachine.FluentInterface.Instructions
             return _binaryOperator(InstructionsEnum.LessThan);
         }
 
+        public IfInstruction If() => _getInstruction<IfInstruction>();
+
         public DefTypeInstruction DefType() => _getInstruction<DefTypeInstruction>();
 
         public ForInstruction For() => _getInstruction<ForInstruction>();
@@ -91,6 +93,9 @@ namespace BytecodeVirtualMachine.FluentInterface.Instructions
         public GetVarInstruction GetVar() => _getInstruction<GetVarInstruction>();
 
         public SetVarInstruction SetVar() => _getInstruction<SetVarInstruction>();
+
+        public DefFunctionInstruction DefFunction() => _getInstruction<DefFunctionInstruction>();
+        public FunctionInstruction Function() => _getInstruction<FunctionInstruction>();
 
         public CustomFunctionInstruction CustomFunction() => _getInstruction<CustomFunctionInstruction>();
 

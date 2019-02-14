@@ -5,8 +5,21 @@ namespace BytecodeVirtualMachine.FluentInterface.Instructions
 {
     public class DefFunctionInstruction : InstructionBase
     {
+        private IInstruction _id;
         private ReturnSignatureInstruction _returnSignature;
         private InstructionAggregate _body;
+
+        public DefFunctionInstruction Id(byte id)
+        {
+            _id = new LiteralInstruction(id);
+            return this;
+        }
+
+        public DefFunctionInstruction Id(IInstruction id)
+        {
+            _id = id;
+            return this;
+        }
 
         public DefFunctionInstruction ReturnSignature(byte typeId, bool isArray = false)
         {
@@ -24,8 +37,11 @@ namespace BytecodeVirtualMachine.FluentInterface.Instructions
 
         public override void ToInstructions(List<byte> instructions)
         {
-            _returnSignature.ToInstructions(instructions);
+            _id?.ToInstructions(instructions);
+            instructions.Add((byte)InstructionsEnum.DefFunction);
+            _returnSignature?.ToInstructions(instructions);
             _body.ToInstructions(instructions);
+            instructions.Add((byte)InstructionsEnum.EndDefFunction);
         }
     }
 }

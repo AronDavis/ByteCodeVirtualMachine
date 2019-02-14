@@ -8,6 +8,7 @@ namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
     public class InstructionAggregateTests
     {
         private byte _val;
+        private bool _condition;
 
         private List<byte> _expected;
         
@@ -15,35 +16,40 @@ namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
         public void Init()
         {
             _val = 0;
+            _condition = false;
 
-            _expected = new ReturnSignatureInstruction(_val).ToInstructions();
+            _expected = new List<byte>();
 
-            _expected.AddRange(new LiteralInstruction(_val).ToInstructions());
+            new LiteralInstruction(_val).ToInstructions(_expected);
 
-            _expected.AddRange(new BinaryOperatorInstruction(InstructionsEnum.Add).Left(_val).Right(_val).ToInstructions());
-            _expected.AddRange(new BinaryOperatorInstruction(InstructionsEnum.Subtract).Left(_val).Right(_val).ToInstructions());
-            _expected.AddRange(new BinaryOperatorInstruction(InstructionsEnum.Multiply).Left(_val).Right(_val).ToInstructions());
-            _expected.AddRange(new BinaryOperatorInstruction(InstructionsEnum.Divide).Left(_val).Right(_val).ToInstructions());
+            new BinaryOperatorInstruction(InstructionsEnum.Add).Left(_val).Right(_val).ToInstructions(_expected);
+            new BinaryOperatorInstruction(InstructionsEnum.Subtract).Left(_val).Right(_val).ToInstructions(_expected);
+            new BinaryOperatorInstruction(InstructionsEnum.Multiply).Left(_val).Right(_val).ToInstructions(_expected);
+            new BinaryOperatorInstruction(InstructionsEnum.Divide).Left(_val).Right(_val).ToInstructions(_expected);
 
-            _expected.AddRange(new BinaryOperatorInstruction(InstructionsEnum.EqualTo).Left(_val).Right(_val).ToInstructions());
-            _expected.AddRange(new BinaryOperatorInstruction(InstructionsEnum.GreaterThanOrEqualTo).Left(_val).Right(_val).ToInstructions());
-            _expected.AddRange(new BinaryOperatorInstruction(InstructionsEnum.GreaterThan).Left(_val).Right(_val).ToInstructions());
-            _expected.AddRange(new BinaryOperatorInstruction(InstructionsEnum.LessThanOrEqualTo).Left(_val).Right(_val).ToInstructions());
-            _expected.AddRange(new BinaryOperatorInstruction(InstructionsEnum.LessThan).Left(_val).Right(_val).ToInstructions());
+            new BinaryOperatorInstruction(InstructionsEnum.EqualTo).Left(_val).Right(_val).ToInstructions(_expected);
+            new BinaryOperatorInstruction(InstructionsEnum.GreaterThanOrEqualTo).Left(_val).Right(_val).ToInstructions(_expected);
+            new BinaryOperatorInstruction(InstructionsEnum.GreaterThan).Left(_val).Right(_val).ToInstructions(_expected);
+            new BinaryOperatorInstruction(InstructionsEnum.LessThanOrEqualTo).Left(_val).Right(_val).ToInstructions(_expected);
+            new BinaryOperatorInstruction(InstructionsEnum.LessThan).Left(_val).Right(_val).ToInstructions(_expected);
 
-            _expected.AddRange(new DefTypeInstruction().Id(_val).NumberOfFields(_val).ToInstructions());
+            new IfInstruction().Condition(_condition).ToInstructions(_expected);
 
-            _expected.AddRange(new DefArrayInstruction().Id(_val).Length(_val).Type(_val).ToInstructions());
-            _expected.AddRange(new SetArrayValueAtIndexInstruction().Id(_val).Index(_val).Value(_val).ToInstructions());
-            _expected.AddRange(new GetArrayInstruction().Id(_val).ToInstructions());
+            new DefTypeInstruction().Id(_val).NumberOfFields(_val).ToInstructions(_expected);
 
-            _expected.AddRange(new DefVarInstruction().Id(_val).Type(_val).ToInstructions());
-            _expected.AddRange(new GetVarInstruction().Id(_val).ToInstructions());
-            _expected.AddRange(new SetVarInstruction().Id(_val).Value(_val).ToInstructions());
+            new ForInstruction().NumberOfLoops(_val).ToInstructions(_expected);
 
-            _expected.AddRange(new CustomFunctionInstruction().Id(_val).ToInstructions());
+            new DefArrayInstruction().Id(_val).Length(_val).Type(_val).ToInstructions(_expected);
+            new SetArrayValueAtIndexInstruction().Id(_val).Index(_val).Value(_val).ToInstructions(_expected);
+            new GetArrayInstruction().Id(_val).ToInstructions(_expected);
 
-            _expected.AddRange(new ReturnInstruction().ToInstructions());
+            new DefVarInstruction().Id(_val).Type(_val).ToInstructions(_expected);
+            new GetVarInstruction().Id(_val).ToInstructions(_expected);
+            new SetVarInstruction().Id(_val).Value(_val).ToInstructions(_expected);
+
+            new CustomFunctionInstruction().Id(_val).ToInstructions(_expected);
+
+            new ReturnInstruction().ToInstructions(_expected);
         }
 
         [TestMethod]
@@ -51,82 +57,86 @@ namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            List<byte> actual = new DefFunctionInstruction()
-                .ReturnSignature(_val)
-                .Body(b =>
-                {
-                    b.Literal(_val);
+            var instructionAggregate = new InstructionAggregate();
 
-                    b.Add()
-                    .Left(_val)
-                    .Right(_val);
+            instructionAggregate.Literal(_val);
 
-                    b.Subtract()
-                    .Left(_val)
-                    .Right(_val);
+            instructionAggregate.Add()
+                .Left(_val)
+                .Right(_val);
 
-                    b.Multiply()
-                    .Left(_val)
-                    .Right(_val);
+            instructionAggregate.Subtract()
+                .Left(_val)
+                .Right(_val);
 
-                    b.Divide()
-                    .Left(_val)
-                    .Right(_val);
+            instructionAggregate.Multiply()
+                .Left(_val)
+                .Right(_val);
 
-                    b.EqualTo()
-                    .Left(_val)
-                    .Right(_val);
+            instructionAggregate.Divide()
+                .Left(_val)
+                .Right(_val);
 
-                    b.GreaterThanOrEqualTo()
-                    .Left(_val)
-                    .Right(_val);
+            instructionAggregate.EqualTo()
+                .Left(_val)
+                .Right(_val);
 
-                    b.GreaterThan()
-                    .Left(_val)
-                    .Right(_val);
+            instructionAggregate.GreaterThanOrEqualTo()
+                .Left(_val)
+                .Right(_val);
 
-                    b.LessThanOrEqualTo()
-                    .Left(_val)
-                    .Right(_val);
+            instructionAggregate.GreaterThan()
+                .Left(_val)
+                .Right(_val);
 
-                    b.LessThan()
-                    .Left(_val)
-                    .Right(_val);
+            instructionAggregate.LessThanOrEqualTo()
+                .Left(_val)
+                .Right(_val);
 
-                    b.DefType()
-                    .Id(_val)
-                    .NumberOfFields(_val);
+            instructionAggregate.LessThan()
+                .Left(_val)
+                .Right(_val);
 
-                    b.DefArray()
-                    .Id(_val)
-                    .Length(_val)
-                    .Type(_val);
+            instructionAggregate.If()
+                .Condition(_condition);
 
-                    b.SetArrayValueAtIndex()
-                    .Id(_val)
-                    .Index(_val)
-                    .Value(_val);
+            instructionAggregate.DefType()
+                .Id(_val)
+                .NumberOfFields(_val);
 
-                    b.GetArray()
-                    .Id(_val);
+            instructionAggregate.For()
+                .NumberOfLoops(_val);
 
-                    b.DefVar()
-                    .Id(_val)
-                    .Type(_val);
+            instructionAggregate.DefArray()
+                .Id(_val)
+                .Length(_val)
+                .Type(_val);
 
-                    b.GetVar()
-                    .Id(_val);
+            instructionAggregate.SetArrayValueAtIndex()
+                .Id(_val)
+                .Index(_val)
+                .Value(_val);
 
-                    b.SetVar()
-                    .Id(_val)
-                    .Value(_val);
+            instructionAggregate.GetArray()
+                .Id(_val);
 
-                    b.CustomFunction()
-                    .Id(_val);
+            instructionAggregate.DefVar()
+                .Id(_val)
+                .Type(_val);
 
-                    b.Return();
-                })
-                .ToInstructions();
+            instructionAggregate.GetVar()
+                .Id(_val);
+
+            instructionAggregate.SetVar()
+                .Id(_val)
+                .Value(_val);
+
+            instructionAggregate.CustomFunction()
+                .Id(_val);
+
+            instructionAggregate.Return();
+
+            List<byte> actual = instructionAggregate.ToInstructions();
 
             TestHelper.AssertResultsEqual(_expected, actual);
         }

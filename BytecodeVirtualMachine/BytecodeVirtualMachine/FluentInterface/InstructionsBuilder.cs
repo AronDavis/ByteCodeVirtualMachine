@@ -4,9 +4,16 @@ namespace BytecodeVirtualMachine.FluentInterface
 {
     public class InstructionsBuilder
     {
-        public MainFunctionBuilder Main()
+        private DefFunctionInstruction _main;
+
+        public InstructionsBuilder()
         {
-            return new MainFunctionBuilder();
+            _main = new DefFunctionInstruction().Id(0);
+        }
+
+        public DefFunctionInstruction Main()
+        {
+            return _main;
         }
     }
 }
