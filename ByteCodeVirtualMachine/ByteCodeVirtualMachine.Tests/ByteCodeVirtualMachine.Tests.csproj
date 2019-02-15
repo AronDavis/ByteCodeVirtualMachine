@@ -58,6 +58,7 @@
     <Compile Include="FluentInterfaceTests\DefFunctionInstructionTests.cs" />
     <Compile Include="FluentInterfaceTests\DefArrayInstructionTests.cs" />
     <Compile Include="FluentInterfaceTests\InstructionBaseTests.cs" />
+    <Compile Include="FluentInterfaceTests\SetVarInstructionTests.cs" />
     <Compile Include="FluentInterfaceTests\SetArrayValueAtIndexInstructionTests.cs" />
     <Compile Include="FluentInterfaceTests\ReturnSignatureInstructionTests.cs" />
     <Compile Include="FluentInterfaceTests\ReturnInstructionTests.cs" />
