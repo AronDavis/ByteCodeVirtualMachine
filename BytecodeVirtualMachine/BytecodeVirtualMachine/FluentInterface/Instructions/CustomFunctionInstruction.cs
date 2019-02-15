@@ -20,7 +20,7 @@ namespace BytecodeVirtualMachine.FluentInterface.Instructions
 
         public override void ToInstructions(List<byte> instructions)
         {
-            _id.ToInstructions(instructions);
+            _id?.ToInstructions(instructions);
             instructions.Add((byte)InstructionsEnum.CustomFunction);
         }
     }

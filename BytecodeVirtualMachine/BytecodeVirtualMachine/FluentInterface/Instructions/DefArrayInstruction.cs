@@ -46,9 +46,9 @@ namespace BytecodeVirtualMachine.FluentInterface.Instructions
 
         public override void ToInstructions(List<byte> instructions)
         {
-            _type.ToInstructions(instructions);
-            _id.ToInstructions(instructions);
-            _length.ToInstructions(instructions);
+            _type?.ToInstructions(instructions);
+            _id?.ToInstructions(instructions);
+            _length?.ToInstructions(instructions);
             instructions.Add((byte)InstructionsEnum.DefArray);
         }
     }

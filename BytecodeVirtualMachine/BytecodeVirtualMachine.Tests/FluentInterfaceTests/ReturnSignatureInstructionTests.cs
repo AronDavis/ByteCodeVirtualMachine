@@ -7,73 +7,75 @@ namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
     [TestClass]
     public class ReturnSignatureInstructionTests
     {
-        [TestMethod]
-        public void TestNoReturnValue()
+        private byte _isArray;
+        private byte _type;
+        private List<byte> _expected;
+
+        [TestInitialize]
+        public void Init()
         {
-            byte typeId = 0;
-            List<byte> _expected = new List<byte>();
-
-            _expected.AddRange<byte>(
-                //set literal for return type
-                (byte)InstructionsEnum.Literal,
-                typeId,
-                (byte)InstructionsEnum.ReturnSignature
-            );
-
-            VirtualMachine vm = new VirtualMachine();
-
-            List<byte> actual = new ReturnSignatureInstruction(typeId)
-                .ToInstructions();
-
-            TestHelper.AssertResultsEqual(_expected, actual);
-        }
-
-        [TestMethod]
-        public void TestReturnValue()
-        {
-            byte typeId = 1;
-            List<byte> _expected = new List<byte>();
-
-            _expected.AddRange<byte>(
-                //set literal for no array
-                (byte)InstructionsEnum.Literal,
-                0,
-
-                //set literal for return type
-                (byte)InstructionsEnum.Literal,
-                typeId,
-                (byte)InstructionsEnum.ReturnSignature
-            );
-
-            VirtualMachine vm = new VirtualMachine();
-
-            List<byte> actual = new ReturnSignatureInstruction(typeId)
-                .ToInstructions();
-
-            TestHelper.AssertResultsEqual(_expected, actual);
-        }
-
-        [TestMethod]
-        public void TestArrayReturnValue()
-        {
-            byte typeId = 1;
-            bool isArray = true;
-            List<byte> _expected = new List<byte>();
-
-            _expected.AddRange<byte>(
+            _isArray = 1;
+            _type = 2;
+            _expected = new List<byte>()
+            {
                 //set literal for array
                 (byte)InstructionsEnum.Literal,
-                1,
+                _isArray,
 
                 //set literal for return type
                 (byte)InstructionsEnum.Literal,
-                typeId,
+                _type,
                 (byte)InstructionsEnum.ReturnSignature
-            );
+            };
+        }
 
+        [TestMethod]
+        public void TestValues()
+        {
+            VirtualMachine vm = new VirtualMachine();
+            List<byte> actual = new ReturnSignatureInstruction()
+                .Type(_type)
+                .IsArray(_isArray)
+                .ToInstructions();
+
+            TestHelper.AssertResultsEqual(_expected, actual);
+        }
+
+        [TestMethod]
+        public void TestBooleanValue()
+        {
+            VirtualMachine vm = new VirtualMachine();
+            List<byte> actual = new ReturnSignatureInstruction()
+                .Type(_type)
+                .IsArray(_isArray == 1)
+                .ToInstructions();
+
+            TestHelper.AssertResultsEqual(_expected, actual);
+        }
+
+        [TestMethod]
+        public void TestExpressions()
+        {
+            VirtualMachine vm = new VirtualMachine();
+            List<byte> actual = new ReturnSignatureInstruction()
+                .Type(new LiteralInstruction(_type))
+                .IsArray(new LiteralInstruction(_isArray))
+                .ToInstructions();
+
+            TestHelper.AssertResultsEqual(_expected, actual);
+        }
+
+        [TestMethod]
+        public void TestNoTypeOrIsArray()
+        {
             VirtualMachine vm = new VirtualMachine();
 
-            List<byte> actual = new ReturnSignatureInstruction(typeId, isArray)
+            _expected = new List<byte>()
+            {
+                (byte)InstructionsEnum.ReturnSignature
+            };
+
+            List<byte> actual = new ReturnSignatureInstruction()
                 .ToInstructions();
 
             TestHelper.AssertResultsEqual(_expected, actual);

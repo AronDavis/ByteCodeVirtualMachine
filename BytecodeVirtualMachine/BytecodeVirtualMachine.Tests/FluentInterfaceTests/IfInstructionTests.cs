@@ -5,38 +5,34 @@ using System.Collections.Generic;
 namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
 {
     [TestClass]
-    public class DefArrayInstructionTests
+    public class IfInstructionTests
     {
-        private byte _type;
-        private byte _id;
-        private byte _length;
+        private byte _val;
+        private bool _condition;
 
         private List<byte> _expected;
         
         [TestInitialize]
         public void Init()
         {
-            _type = 1;
-            _id = 2;
-            _length = 3;
+            _val = 1;
+            _condition = true;
 
             _expected = new List<byte>();
 
             _expected.AddRange<byte>(
-                //set literal for type
+                //set literal for number of loops 
                 (byte)InstructionsEnum.Literal,
-                _type,
+                (byte)(_condition ? 1 : 0),
 
-                //set literal for array id
+                (byte)InstructionsEnum.If,
+
+                //set literal for body contents
                 (byte)InstructionsEnum.Literal,
-                _id,
+                _val,
 
-                //set literal for length
-                (byte)InstructionsEnum.Literal,
-                _length,
-
-                //define type_2[] array_0 = new type_2[]
-                (byte)InstructionsEnum.DefArray
+                //end for
+                (byte)InstructionsEnum.EndIf
             );
         }
 
@@ -45,42 +41,46 @@ namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            List<byte> actual = new DefArrayInstruction()
-                .Type(_type)
-                .Id(_id)
-                .Length(_length)
+            List<byte> actual = new IfInstruction()
+                .Condition(_condition)
+                .Body(b =>
+                {
+                    b.Literal(_val);
+                })
                 .ToInstructions();
-
+            
             TestHelper.AssertResultsEqual(_expected, actual);
         }
 
         [TestMethod]
         public void TestExpressions()
         {
-
             VirtualMachine vm = new VirtualMachine();
 
-            List<byte> actual = new DefArrayInstruction()
-                .Type(new LiteralInstruction(_type))
-                .Id(new LiteralInstruction(_id))
-                .Length(new LiteralInstruction(_length))
+            List<byte> actual = new IfInstruction()
+                .Condition(new LiteralInstruction((byte)(_condition ? 1 : 0)))
+                .Body(b =>
+                {
+                    b.Literal(_val);
+                })
                 .ToInstructions();
 
             TestHelper.AssertResultsEqual(_expected, actual);
         }
 
         [TestMethod]
-        public void TestNoTypeIdOrLength()
+        public void TestNoConditionOrBody()
         {
             VirtualMachine vm = new VirtualMachine();
 
             _expected = new List<byte>()
             {
-                (byte)InstructionsEnum.DefArray
+                (byte)InstructionsEnum.If,
+                (byte)InstructionsEnum.EndIf
             };
 
-            List<byte> actual = new DefArrayInstruction()
-               .ToInstructions();
+            List<byte> actual = new IfInstruction()
+                .ToInstructions();
 
             TestHelper.AssertResultsEqual(_expected, actual);
         }

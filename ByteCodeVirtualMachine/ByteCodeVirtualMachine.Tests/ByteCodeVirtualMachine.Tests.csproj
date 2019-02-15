@@ -48,8 +48,10 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FluentInterfaceTests\IfInstructionTests.cs" />
     <Compile Include="FluentInterfaceTests\ForInstructionTests.cs" />
     <Compile Include="FluentInterfaceTests\InstructionAggregateTests.cs" />
+    <Compile Include="FluentInterfaceTests\CustomFunctionInstructionTests.cs" />
     <Compile Include="FluentInterfaceTests\LiteralInstructionTests.cs" />
     <Compile Include="FluentInterfaceTests\GetArrayInstructionTests.cs" />
     <Compile Include="FluentInterfaceTests\DefTypeInstructionTests.cs" />

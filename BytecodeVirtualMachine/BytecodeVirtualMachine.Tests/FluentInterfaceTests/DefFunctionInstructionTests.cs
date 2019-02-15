@@ -24,7 +24,10 @@ namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
 
             _expected.Add((byte)InstructionsEnum.DefFunction);
 
-            new ReturnSignatureInstruction(_typeId).ToInstructions(_expected);
+            new ReturnSignatureInstruction()
+                .Type(_typeId)
+                .IsArray(false)
+                .ToInstructions(_expected);
 
             new LiteralInstruction(_val).ToInstructions(_expected);
 
@@ -43,6 +46,23 @@ namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
                 {
                     b.Literal(_val);
                 })
+                .ToInstructions();
+
+            TestHelper.AssertResultsEqual(_expected, actual);
+        }
+
+        [TestMethod]
+        public void TestNoIdReturnSignatureOrBody()
+        {
+            VirtualMachine vm = new VirtualMachine();
+
+            _expected = new List<byte>()
+            {
+                (byte)InstructionsEnum.DefFunction,
+                (byte)InstructionsEnum.EndDefFunction
+            };
+
+            List<byte> actual = new DefFunctionInstruction()
                 .ToInstructions();
 
             TestHelper.AssertResultsEqual(_expected, actual);

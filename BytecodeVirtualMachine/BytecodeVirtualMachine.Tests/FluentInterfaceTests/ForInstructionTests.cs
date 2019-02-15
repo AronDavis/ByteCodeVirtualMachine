@@ -69,18 +69,18 @@ namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
         }
 
         [TestMethod]
-        public void TestEmptyNumberOfLoops()
+        public void TestNoBodyOrNumberOfLoops()
         {
             VirtualMachine vm = new VirtualMachine();
 
-            List<byte> actual = new LiteralInstruction(_numberOfLoops).ToInstructions();
+            _expected = new List<byte>()
+            {
+                (byte)InstructionsEnum.For,
+                (byte)InstructionsEnum.EndFor
+            };
 
-            new ForInstruction()
-                .Body(b =>
-                {
-                    b.Literal(_val);
-                })
-                .ToInstructions(actual);
+            List<byte> actual = new ForInstruction()
+                .ToInstructions();
 
             TestHelper.AssertResultsEqual(_expected, actual);
         }

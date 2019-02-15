@@ -59,5 +59,21 @@ namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
 
             TestHelper.AssertResultsEqual(_expected, actual);
         }
+
+        [TestMethod]
+        public void TestNoIdOrNumberOfFields()
+        {
+            VirtualMachine vm = new VirtualMachine();
+
+            _expected = new List<byte>()
+            {
+                (byte)InstructionsEnum.DefType
+            };
+
+            List<byte> actual = new DefTypeInstruction()
+                .ToInstructions();
+
+            TestHelper.AssertResultsEqual(_expected, actual);
+        }
     }
 }

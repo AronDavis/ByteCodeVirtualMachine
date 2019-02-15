@@ -48,8 +48,8 @@ namespace BytecodeVirtualMachine.FluentInterface.Instructions
             foreach (var value in _values)
                 value.ToInstructions(instructions);
 
-            _id.ToInstructions(instructions);
-            _index.ToInstructions(instructions);
+            _id?.ToInstructions(instructions);
+            _index?.ToInstructions(instructions);
             instructions.Add((byte)InstructionsEnum.SetArrayValueAtIndex);
         }
     }

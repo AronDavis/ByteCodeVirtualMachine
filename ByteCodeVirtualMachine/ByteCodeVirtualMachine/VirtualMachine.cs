@@ -181,8 +181,7 @@ namespace BytecodeVirtualMachine
         {
             function.ReturnType = Pop();
 
-            if(function.ReturnType > 0)
-                function.ShouldReturnArray = Pop() == 1;
+            function.ShouldReturnArray = (Pop() == 1);
             
             if (function.ShouldReturnArray)
                 Console.WriteLine($"Setting signature to return type_{function.ReturnType}[]");

@@ -22,32 +22,32 @@ namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
 
             new LiteralInstruction(_val).ToInstructions(_expected);
 
-            new BinaryOperatorInstruction(InstructionsEnum.Add).Left(_val).Right(_val).ToInstructions(_expected);
-            new BinaryOperatorInstruction(InstructionsEnum.Subtract).Left(_val).Right(_val).ToInstructions(_expected);
-            new BinaryOperatorInstruction(InstructionsEnum.Multiply).Left(_val).Right(_val).ToInstructions(_expected);
-            new BinaryOperatorInstruction(InstructionsEnum.Divide).Left(_val).Right(_val).ToInstructions(_expected);
+            new BinaryOperatorInstruction(InstructionsEnum.Add).ToInstructions(_expected);
+            new BinaryOperatorInstruction(InstructionsEnum.Subtract).ToInstructions(_expected);
+            new BinaryOperatorInstruction(InstructionsEnum.Multiply).ToInstructions(_expected);
+            new BinaryOperatorInstruction(InstructionsEnum.Divide).ToInstructions(_expected);
 
-            new BinaryOperatorInstruction(InstructionsEnum.EqualTo).Left(_val).Right(_val).ToInstructions(_expected);
-            new BinaryOperatorInstruction(InstructionsEnum.GreaterThanOrEqualTo).Left(_val).Right(_val).ToInstructions(_expected);
-            new BinaryOperatorInstruction(InstructionsEnum.GreaterThan).Left(_val).Right(_val).ToInstructions(_expected);
-            new BinaryOperatorInstruction(InstructionsEnum.LessThanOrEqualTo).Left(_val).Right(_val).ToInstructions(_expected);
-            new BinaryOperatorInstruction(InstructionsEnum.LessThan).Left(_val).Right(_val).ToInstructions(_expected);
+            new BinaryOperatorInstruction(InstructionsEnum.EqualTo).ToInstructions(_expected);
+            new BinaryOperatorInstruction(InstructionsEnum.GreaterThanOrEqualTo).ToInstructions(_expected);
+            new BinaryOperatorInstruction(InstructionsEnum.GreaterThan).ToInstructions(_expected);
+            new BinaryOperatorInstruction(InstructionsEnum.LessThanOrEqualTo).ToInstructions(_expected);
+            new BinaryOperatorInstruction(InstructionsEnum.LessThan).ToInstructions(_expected);
 
-            new IfInstruction().Condition(_condition).ToInstructions(_expected);
+            new IfInstruction().ToInstructions(_expected);
 
-            new DefTypeInstruction().Id(_val).NumberOfFields(_val).ToInstructions(_expected);
+            new DefTypeInstruction().ToInstructions(_expected);
 
-            new ForInstruction().NumberOfLoops(_val).ToInstructions(_expected);
+            new ForInstruction().ToInstructions(_expected);
 
-            new DefArrayInstruction().Id(_val).Length(_val).Type(_val).ToInstructions(_expected);
-            new SetArrayValueAtIndexInstruction().Id(_val).Index(_val).Value(_val).ToInstructions(_expected);
-            new GetArrayInstruction().Id(_val).ToInstructions(_expected);
+            new DefArrayInstruction().ToInstructions(_expected);
+            new SetArrayValueAtIndexInstruction().ToInstructions(_expected);
+            new GetArrayInstruction().ToInstructions(_expected);
 
-            new DefVarInstruction().Id(_val).Type(_val).ToInstructions(_expected);
-            new GetVarInstruction().Id(_val).ToInstructions(_expected);
-            new SetVarInstruction().Id(_val).Value(_val).ToInstructions(_expected);
+            new DefVarInstruction().ToInstructions(_expected);
+            new GetVarInstruction().ToInstructions(_expected);
+            new SetVarInstruction().ToInstructions(_expected);
 
-            new CustomFunctionInstruction().Id(_val).ToInstructions(_expected);
+            new CustomFunctionInstruction().ToInstructions(_expected);
 
             new ReturnInstruction().ToInstructions(_expected);
         }
@@ -61,78 +61,43 @@ namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
 
             instructionAggregate.Literal(_val);
 
-            instructionAggregate.Add()
-                .Left(_val)
-                .Right(_val);
+            instructionAggregate.Add();
 
-            instructionAggregate.Subtract()
-                .Left(_val)
-                .Right(_val);
+            instructionAggregate.Subtract();
 
-            instructionAggregate.Multiply()
-                .Left(_val)
-                .Right(_val);
+            instructionAggregate.Multiply();
 
-            instructionAggregate.Divide()
-                .Left(_val)
-                .Right(_val);
+            instructionAggregate.Divide();
 
-            instructionAggregate.EqualTo()
-                .Left(_val)
-                .Right(_val);
+            instructionAggregate.EqualTo();
 
-            instructionAggregate.GreaterThanOrEqualTo()
-                .Left(_val)
-                .Right(_val);
+            instructionAggregate.GreaterThanOrEqualTo();
 
-            instructionAggregate.GreaterThan()
-                .Left(_val)
-                .Right(_val);
+            instructionAggregate.GreaterThan();
 
-            instructionAggregate.LessThanOrEqualTo()
-                .Left(_val)
-                .Right(_val);
+            instructionAggregate.LessThanOrEqualTo();
 
-            instructionAggregate.LessThan()
-                .Left(_val)
-                .Right(_val);
+            instructionAggregate.LessThan();
 
-            instructionAggregate.If()
-                .Condition(_condition);
+            instructionAggregate.If();
 
-            instructionAggregate.DefType()
-                .Id(_val)
-                .NumberOfFields(_val);
+            instructionAggregate.DefType();
 
-            instructionAggregate.For()
-                .NumberOfLoops(_val);
+            instructionAggregate.For();
 
-            instructionAggregate.DefArray()
-                .Id(_val)
-                .Length(_val)
-                .Type(_val);
+            instructionAggregate.DefArray();
 
-            instructionAggregate.SetArrayValueAtIndex()
-                .Id(_val)
-                .Index(_val)
-                .Value(_val);
+            instructionAggregate.SetArrayValueAtIndex();
 
-            instructionAggregate.GetArray()
-                .Id(_val);
+            instructionAggregate.GetArray();
 
-            instructionAggregate.DefVar()
-                .Id(_val)
-                .Type(_val);
+            instructionAggregate.DefVar();
 
-            instructionAggregate.GetVar()
-                .Id(_val);
+            instructionAggregate.GetVar();
 
-            instructionAggregate.SetVar()
-                .Id(_val)
-                .Value(_val);
+            instructionAggregate.SetVar();
 
-            instructionAggregate.CustomFunction()
-                .Id(_val);
+            instructionAggregate.CustomFunction();
 
             instructionAggregate.Return();
 

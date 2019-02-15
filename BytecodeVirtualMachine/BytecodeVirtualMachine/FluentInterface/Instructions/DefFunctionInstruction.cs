@@ -23,7 +23,9 @@ namespace BytecodeVirtualMachine.FluentInterface.Instructions
 
         public DefFunctionInstruction ReturnSignature(byte typeId, bool isArray = false)
         {
-            _returnSignature = new ReturnSignatureInstruction(typeId, isArray);
+            _returnSignature = new ReturnSignatureInstruction()
+                .Type(typeId)
+                .IsArray(isArray);
             return this;
         }
 
@@ -40,7 +42,7 @@ namespace BytecodeVirtualMachine.FluentInterface.Instructions
             _id?.ToInstructions(instructions);
             instructions.Add((byte)InstructionsEnum.DefFunction);
             _returnSignature?.ToInstructions(instructions);
-            _body.ToInstructions(instructions);
+            _body?.ToInstructions(instructions);
             instructions.Add((byte)InstructionsEnum.EndDefFunction);
         }
     }

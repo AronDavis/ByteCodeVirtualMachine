@@ -5,82 +5,63 @@ using System.Collections.Generic;
 namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
 {
     [TestClass]
-    public class DefArrayInstructionTests
+    public class CustomFunctionInstructionTests
     {
-        private byte _type;
         private byte _id;
-        private byte _length;
 
         private List<byte> _expected;
         
         [TestInitialize]
         public void Init()
         {
-            _type = 1;
-            _id = 2;
-            _length = 3;
+            _id = 1;
 
             _expected = new List<byte>();
 
             _expected.AddRange<byte>(
-                //set literal for type
-                (byte)InstructionsEnum.Literal,
-                _type,
-
-                //set literal for array id
+                //set literal
                 (byte)InstructionsEnum.Literal,
                 _id,
-
-                //set literal for length
-                (byte)InstructionsEnum.Literal,
-                _length,
-
-                //define type_2[] array_0 = new type_2[]
-                (byte)InstructionsEnum.DefArray
+                (byte)InstructionsEnum.CustomFunction
             );
         }
 
         [TestMethod]
-        public void TestValues()
+        public void TestValue()
         {
             VirtualMachine vm = new VirtualMachine();
 
-            List<byte> actual = new DefArrayInstruction()
-                .Type(_type)
+            List<byte> actual = new CustomFunctionInstruction()
                 .Id(_id)
-                .Length(_length)
                 .ToInstructions();
 
             TestHelper.AssertResultsEqual(_expected, actual);
         }
 
         [TestMethod]
-        public void TestExpressions()
+        public void TestExpression()
         {
-
             VirtualMachine vm = new VirtualMachine();
 
-            List<byte> actual = new DefArrayInstruction()
-                .Type(new LiteralInstruction(_type))
+            List<byte> actual = new CustomFunctionInstruction()
                 .Id(new LiteralInstruction(_id))
-                .Length(new LiteralInstruction(_length))
                 .ToInstructions();
 
             TestHelper.AssertResultsEqual(_expected, actual);
         }
 
         [TestMethod]
-        public void TestNoTypeIdOrLength()
+        public void TestNoId()
         {
             VirtualMachine vm = new VirtualMachine();
 
             _expected = new List<byte>()
             {
-                (byte)InstructionsEnum.DefArray
+                (byte)InstructionsEnum.CustomFunction
             };
 
-            List<byte> actual = new DefArrayInstruction()
-               .ToInstructions();
+            List<byte> actual = new CustomFunctionInstruction()
+                .ToInstructions();
 
             TestHelper.AssertResultsEqual(_expected, actual);
         }

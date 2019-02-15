@@ -68,13 +68,13 @@ namespace BytecodeVirtualMachine.Tests.FluentInterfaceTests
         {
             VirtualMachine vm = new VirtualMachine();
 
-            List<byte> actual = new LiteralInstruction(_val1).ToInstructions();
+            _expected = new List<byte>()
+            {
+                (byte)_binaryOperator
+            };
 
-            new LiteralInstruction(_val2)
-                .ToInstructions(actual);
-
-            new BinaryOperatorInstruction(_binaryOperator)
-                .ToInstructions(actual);
+            List<byte> actual = new BinaryOperatorInstruction(_binaryOperator)
+                .ToInstructions();
 
             TestHelper.AssertResultsEqual(_expected, actual);
         }
